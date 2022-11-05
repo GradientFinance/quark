@@ -102,21 +102,52 @@ export function Content() {
                   </div>
                   <div>
                     <div className="font-bold">Hart Hagerty</div>
-                    <span className="badge badge-ghost">what goes here?</span>
+                    <span className="badge badge-ghost">Collection-wide</span>
                   </div>
                 </div>
               </td>
               <td>{index.price} ETH</td>
               <td>{index.volume}</td>
-              <td> {index.volatility}
+              <td>
+                <div>
+                  <span className="badge badge-success mr-2">{index.volatility}</span>
+                  <span className="badge badge-ghost">{index.volatility}</span>
+                </div>
               </td>
               <td>
-                98% R<sup>2</sup>
+                <div className="avatar-group -space-x-6">
+                  <div className="avatar">
+                    <div className="w-12">
+                      <img src="https://placeimg.com/192/192/people" />
+                    </div>
+                  </div>
+                  <div className="avatar">
+                    <div className="w-12">
+                      <img src="https://placeimg.com/192/192/people" />
+                    </div>
+                  </div>
+                  <div className="avatar">
+                    <div className="w-12">
+                      <img src="https://placeimg.com/192/192/people" />
+                    </div>
+                  </div>
+                  <div className="avatar placeholder">
+                    <div className="w-12 bg-accent-focus text-accent-content">
+                      <span>+99</span>
+                    </div>
+                  </div>
+                </div>
+
+              </td>
+              <td>
+                98% R<sup>2</sup> <span className="badge badge-ghost badge-sm ml-2">5.05% error</span>
               </td>
               <td>
                 {index.manipulationRisk}
+                {index.manipulationRisk >= 0.4 ? <span className="ml-3 badge badge-primary">{index.openSource ? 'Medium' : 'No'}</span> : ''}
               </td>
-              <td> {index.openSource}
+              <td>
+                <span className="badge badge-ghost">{index.openSource ? 'Yes' : 'No'}</span>
               </td>
             </tr>
           ))}
@@ -126,12 +157,11 @@ export function Content() {
   )
 }
 
-
-
 export default function App() {
   useEffect(() => {
     document.title = "Indices";
     document.documentElement.setAttribute("data-theme", "cupcake");
+    document.documentElement.className = 'bg-base-300';
   });
 
   return (
