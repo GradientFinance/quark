@@ -6,11 +6,8 @@ import { Positions } from "components/derivative/positions";
 import { Bar } from "components/derivative/bar";
 import { Orders } from "components/derivative/orders";
 import { Bids } from "components/derivative/bids";
+import { Chart } from "components/derivative/chart";
 import dynamic from "next/dynamic";
-
-const ChartIndex = dynamic(() => import("../components/derivative/chart"), {
-  ssr: false
-});
 
 export function Content() {
   return (
@@ -21,9 +18,7 @@ export function Content() {
             <Bar />
           </div>
           <div className="col-span-2">
-            <div className="w-full p-6 bg-base-100 shadow rounded-xl">
-              <ChartIndex width={880} height={517} />
-            </div>
+            <Chart />
           </div>
           <div className="col-span-1 h-full">
             <Form index={"placeholder"} />

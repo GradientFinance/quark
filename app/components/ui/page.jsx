@@ -1,12 +1,16 @@
-import { WagmiConfig, createClient } from "wagmi";
-import { ConnectKitProvider, ConnectKitButton, getDefaultClient } from "connectkit";
+import { WagmiConfig, createClient, chain } from "wagmi";
+import { ConnectKitProvider, getDefaultClient } from "connectkit";
 
 const alchemyId = process.env.ALCHEMY_ID;
+
+// Choose which chains you'd like to show
+const chains = [chain.mainnet, chain.goerli, chain.optimism, chain.arbitrum];
 
 const client = createClient(
   getDefaultClient({
     appName: "App",
-    alchemyId: alchemyId,
+    alchemyId,
+    chains,
   }),
 );
 

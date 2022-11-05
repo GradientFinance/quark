@@ -45,7 +45,7 @@ export function ActivePositions() {
         <thead>
           <tr>
             <th>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
               </svg>
             </th>
@@ -85,11 +85,14 @@ export function NoActivePositions() {
 
 export function Positions() {
   return (
-    <div className="overflow-hidden bg-base-100 shadow sm:rounded-xl">
-      <div className="px-4 py-5 sm:px-6">
-        <div className="-ml-2 -mt-2 flex flex-wrap items-baseline mb-4">
-          <h3 className="ml-2 mt-2 text-lg font-medium leading-6 text-gray-900">Active Positions</h3>
-        </div>
+    <div className="card bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+          </svg>
+          Active positions
+        </h2>
         {orders.length > 0 ? <ActivePositions /> : <NoActivePositions />}
       </div>
     </div>
