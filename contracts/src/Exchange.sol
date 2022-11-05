@@ -6,7 +6,7 @@ import "openzeppelin-contracts/utils/Strings.sol";
 import "openzeppelin-contracts/utils/cryptography/SignatureChecker.sol";
 import "solmate/tokens/ERC721.sol";
 
-interface IPriceFeed {
+interface IIndex {
     function getPrice() external view returns (uint256);
 }
 
@@ -28,6 +28,11 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
+/**
+ * @title ...
+ * @author cairoeth <cairoeth@protonmail.com>
+ * @notice ...
+ **/
 contract Exchange is ERC721, ReentrancyGuard {
     using Strings for uint256;
 
@@ -39,6 +44,11 @@ contract Exchange is ERC721, ReentrancyGuard {
         uint256 indexed id,
         address indexed buyer,
         address indexed seller,
+        OptionInfo option
+    );
+
+    event ExercisedOption(
+        uint256 indexed id,
         OptionInfo option
     );
     
@@ -166,6 +176,61 @@ contract Exchange is ERC721, ReentrancyGuard {
     * @param _id id of the option 
     **/
     function exercise(uint256 _id) external nonReentrant returns (bool) {
+        OptionInfo memory option = getOption(_id);
+        
+        require(_ownerOf[_id] != address(0), "Option does not exist or is not filled.");
+        require(block.timestamp > option._expiry, "Option not expired.");
+    
+        IIndex index = IIndex(option._index);
+        IERC20 collateral = IERC20(option._token);
+
+        address receiver = _ownerOf[_id];
+        uint256 price = index.getPrice();
+
+        _burn(_id);
+        
+        // Price decreased or equal to strike.
+        if (price <= option._strike) {
+            uint256 payback_holder = option._strike - price;
+            uint256 payback_seller = option._strike - payback_holder;
+
+            // Paying option filler.
+            bool payment_seller = collateral.transferFrom(address(this), option._seller, payback_seller);
+            require(payment_seller, "Filler payback transfer failed.");
+
+            // Option is put, hence profitable.
+            if (option._type) {
+                bool payment_holder = collateral.transferFrom(address(this), receiver, payback_holder);
+                require(payment_holder, "Holder payback transfer failed.");
+            }
+            // Option is call, hence not profitable.
+            else {
+                delete options[_id];
+            }
+        } 
+        // Price increased compared to strike.
+        else {
+            uint256 payback_holder = price - option._strike;
+            uint256 payback_seller = option._strike - payback_holder;
+
+            // Paying option filler.
+            bool payment_seller = collateral.transferFrom(address(this), option._seller, payback_seller);
+            require(payment_seller, "Filler payback transfer failed.");
+
+            // Option is put, hence not profitable.
+            if (option._type) {
+                delete options[_id];
+            }
+            // Option is call, hence profitable.
+            else {
+                // Paying option holder.
+                bool payment_holder = collateral.transferFrom(address(this), receiver, payback_holder);
+                require(payment_holder, "Holder payback transfer failed.");
+            }
+        }
+
+        emit ExercisedOption(_id, option);
+
         return true;
     }
 
