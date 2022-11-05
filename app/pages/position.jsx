@@ -2,6 +2,7 @@ import { useEffect, React } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
 import { Form } from "components/derivative/form";
+import { Positions } from "components/derivative/positions";
 import dynamic from "next/dynamic";
 
 const ChartIndex = dynamic(() => import("../components/derivative/chart"), {
@@ -28,6 +29,9 @@ export function Content() {
         </div>
         <div className="col-span-1">
           Orders
+        </div>
+        <div className="col-span-2">
+          <Positions />
         </div>
       </div>
     </div>
