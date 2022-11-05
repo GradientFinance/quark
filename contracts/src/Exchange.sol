@@ -106,11 +106,17 @@ contract Exchange is ERC721, ReentrancyGuard {
         require(isSignatureValid(_offer, _signature), "Option seller signature is invalid");
 
         IERC20 collateral = IERC20(_offer._token);
-        uint256 buyer_allowance = collateral.allowance(_offer._buyer, address(this));
-        uint256 seller_allowance = collateral.allowance(_offer._seller, address(this));
+        uint256 buyer_allowance = collateral.allowance(msg.sender, address(this));
+        uint256 seller_allowance = collateral.allowance(_signature.signer, address(this));
 
         require(buyer_allowance >= _offer._premium, "Option buyer allowance must be equal or greater than the option premium.");
-        require(seller_allowance >= _offer._strike, "Option seller Allowance must be equal or greater than the option premium.");
+        require(seller_allowance >= _offer._strike, "Option seller Allowance must be equal or greater than the option strike.");
+
+        bool seller_payment = collateral.transferFrom(msg.sender, _signature.signer, _offer._premium);
+        require(seller_payment, "Seller premoum payment transfer failed.");
+
+        bool receive_payment = collateral.transferFrom(_signature.signer, address(this), _offer._strike);
+        require(receive_payment, "Receive collateral transfer failed.");
 
         ++optionId;
 
@@ -123,8 +129,8 @@ contract Exchange is ERC721, ReentrancyGuard {
             _expiry: _offer._expiry,
             _token: _offer._token,
             _timestamp: block.timestamp,
-            _buyer: _offer._buyer,
-            _seller: _offer._seller
+            _buyer: msg.sender,
+            _seller: _signature.signer
         });
         
         options[optionId] = option;
