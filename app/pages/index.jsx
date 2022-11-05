@@ -7,6 +7,8 @@ import {
   useWaitForTransaction,
 } from 'wagmi'
 import useSWR from "swr";
+import { ModelStats } from 'components/derivative/model_stats'
+
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const indices = [
@@ -129,12 +131,77 @@ export function CreateIndex() {
   )
 }
 
+export function CreateModal() {
+
+  return (
+    <>
+      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+      <label htmlFor="my-modal-3" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <h3 className="text-lg font-bold">Congratulations random Internet user!</h3>
+          <p className="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
+          <ul className="steps">
+            <li className="step step-primary">Register</li>
+            <li className="step step-primary">Choose plan</li>
+            <li className="step">Purchase</li>
+            <li className="step">Receive Product</li>
+          </ul>
+
+          <div className="form-control mb-2">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="text" placeholder="0.01" className="input input-bordered" />
+          </div>
+          <div className="form-control mb-2">
+            <label className="label">
+              <span className="label-text">Collection address</span>
+            </label>
+            <input type="text" placeholder="0.01" className="input input-bordered" />
+          </div>
+          <div className="form-control mb-2">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="text" placeholder="0.01" className="input input-bordered" />
+          </div>
+          <div className="form-control mb-5">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="file" className="file-input file-input-bordered w-full" />
+          </div>
+          <div className="form-control mb-2">
+            <select className="select select-bordered w-full">
+              <option disabled selected>Pick your favorite Simpson</option>
+              <option>Homer</option>
+              <option>Marge</option>
+              <option>Bart</option>
+              <option>Lisa</option>
+              <option>Maggie</option>
+            </select>
+          </div>
+          <button className="btn btn-block space-x-2 mt-3">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+              </svg>
+              Buy Put
+            </div>
+          </button>
+        </label>
+      </label>
+    </>
+  );
+
+}
+
+
 export function Content() {
   return (
     <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
-      <div className="hero">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <img src="https://placeimg.com/260/400/arch" className="max-w-sm rounded-lg shadow-2xl" />
+      <div className="hero my-10">
+        <div className="hero-content">
           <div>
             <h1 className="text-5xl font-bold">Price Feeds</h1>
             <p className="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
@@ -281,9 +348,8 @@ export function Content() {
                       <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                     </svg>
                   </div>
-                  98% R<sup>2</sup>
+                  <label href="#" htmlFor="modelStats" className="a">High</label>
                 </div>
-                <span className="badge badge-ghost ml-4">5.05% error</span>
               </td>
               <td>
                 {index.manipulationRisk}
@@ -300,9 +366,8 @@ export function Content() {
           ))}
         </tbody>
       </table>
-
-
-      <CreateIndex />
+      <CreateModal />
+      <ModelStats />
     </div>
   )
 }
@@ -310,7 +375,7 @@ export function Content() {
 export default function App() {
   useEffect(() => {
     document.title = "Indices";
-    document.documentElement.setAttribute("data-theme", "night");
+    document.documentElement.setAttribute("data-theme", "cupcake");
     document.documentElement.className = 'bg-base-300';
   });
 

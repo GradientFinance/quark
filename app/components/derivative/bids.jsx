@@ -79,7 +79,7 @@ export function Bids() {
                     <th className="bg-base-100/[.1] text-center">Strike</th>
                     <th className="bg-base-100/[.1] text-center">Expiration</th>
                     <th className="bg-base-100/[.1] text-center">Leverage</th>
-                    <th className="bg-base-100/[.1] text-center">Best Premium</th>
+                    <th className="bg-base-100/[.1] text-center">Best Offer</th>
                     <th className="bg-base-100/[.1]"></th>
                   </tr>
                 </thead>
@@ -91,7 +91,8 @@ export function Bids() {
                       <td className="bg-base-100/[.04] text-center">In {sale.expiration} days</td>
                       <td className="bg-base-100/[.04] text-center">{sale.leverage}x</td>
                       <td className="bg-base-100/[.04] text-center">
-                        <span class="badge badge-ghost"><a href="#">1.402 ETH</a></span>
+                        <span class="badge badge-ghost mr-2"><a href="#">54% APR</a></span>
+                        <span class="badge badge-ghost badge-outline badge-sm"><a href="#">1.402 ETH</a></span>
                       </td>
                       <td className="bg-base-100/[.04] text-center">
                         <label htmlFor="my-modal-4">

@@ -36,34 +36,109 @@ export function Put({ setCallActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0x5F9030998B9C8f7Bf82cFdb5036851B4187b434C',
+    address: '0xfcfe28867ba312122d79a82ddd11fe7cf8b5a1f3',
     abi: [
       {
         inputs: [
           {
-            "internalType": "uint256",
-            "name": "_strike",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_expiration",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_leverage",
-            "type": "uint256"
+            components: [
+              {
+                internalType: "address",
+                name: "_index",
+                type: "address"
+              },
+              {
+                internalType: "bool",
+                name: "_type",
+                type: "bool"
+              },
+              {
+                internalType: "uint256",
+                name: "_strike",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "_expiry",
+                type: "uint256"
+              },
+              {
+                internalType: "address",
+                name: "_denomination",
+                type: "address"
+              }
+            ],
+            internalType: "struct Exchange.RequestInfo",
+            name: "_request",
+            type: "tuple"
           }
         ],
-        name: "Do",
-        outputs: [],
+        name: "requestOption",
+        outputs: [
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "_id",
+                type: "uint256"
+              },
+              {
+                internalType: "address",
+                name: "_index",
+                type: "address"
+              },
+              {
+                internalType: "bool",
+                name: "_type",
+                type: "bool"
+              },
+              {
+                internalType: "uint256",
+                name: "_strike",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "_premium",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "_expiry",
+                type: "uint256"
+              },
+              {
+                internalType: "address",
+                name: "_denomination",
+                type: "address"
+              },
+              {
+                internalType: "uint256",
+                name: "_timestamp",
+                type: "uint256"
+              },
+              {
+                internalType: "address",
+                name: "_buyer",
+                type: "address"
+              },
+              {
+                internalType: "address",
+                name: "_seller",
+                type: "address"
+              }
+            ],
+            internalType: "struct Exchange.OptionInfo",
+            name: "",
+            type: "tuple"
+          }
+        ],
         stateMutability: "nonpayable",
         type: "function"
-      }
+      },
     ],
-    functionName: 'Do',
-    args: [parseInt(debouncedStrike), parseInt(debouncedExpiration), parseInt(debouncedLeverage)],
+    functionName: 'requestOption',
+    args: ["0xfcfe28867ba312122d79a82ddd11fe7cf8b5a1f3", true, parseInt(debouncedStrike), parseInt(debouncedExpiration)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
@@ -208,19 +283,19 @@ export function Call({ setPutActive }) {
       {
         inputs: [
           {
-            "internalType": "uint256",
-            "name": "_strike",
-            "type": "uint256"
+            internalType: "uint256",
+            name: "_strike",
+            type: "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "_expiration",
-            "type": "uint256"
+            internalType: "uint256",
+            name: "_expiration",
+            type: "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "_leverage",
-            "type": "uint256"
+            internalType: "uint256",
+            name: "_leverage",
+            type: "uint256"
           }
         ],
         name: "Do",
