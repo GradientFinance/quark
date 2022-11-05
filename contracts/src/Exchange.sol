@@ -6,6 +6,10 @@ import "openzeppelin-contracts/utils/Strings.sol";
 import "openzeppelin-contracts/utils/cryptography/SignatureChecker.sol";
 import "solmate/tokens/ERC721.sol";
 
+interface IPriceFeed {
+    function getPrice() external view returns (uint256);
+}
+
 interface IERC20 {
     function totalSupply() external view returns (uint256);
 
@@ -26,7 +30,7 @@ interface IERC20 {
 
 contract Exchange is ERC721, ReentrancyGuard {
     using Strings for uint256;
-    
+
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
@@ -43,7 +47,7 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     string public constant baseURI = "https://link/";
-    
+
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
     //////////////////////////////////////////////////////////////*/
@@ -62,8 +66,6 @@ contract Exchange is ERC721, ReentrancyGuard {
         uint256 _premium;    // premium return
         uint256 _expiry;     // duration of option
         address _token;      // token collateral
-        address _buyer;      // token collateral
-        address _seller;     // token collateral
     }
 
     struct OptionInfo {
@@ -84,18 +86,26 @@ contract Exchange is ERC721, ReentrancyGuard {
     mapping(address => mapping(uint256 => bool)) internal nonce_used_before;
 
     uint256 public optionId;
-
+    
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() ERC721("Exchange Option", "OPTION") {
+    constructor(address[] memory collaterals) ERC721("Exchange Option", "OPTION") {
+        for (uint i = 0; i < collaterals.length; i++) {
+            valid_collaterals[collaterals[i]] = true;
+        }
     }
 
     /*//////////////////////////////////////////////////////////////
                              PUBLIC FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
+    /**
+    * @notice Creates a ROF (request-for-quote) for a given option,
+    * @param _offer The offer made by the lender,
+    * @param _signature lenders signature
+    **/
     function acceptOffer(OfferInfo memory _offer, Signature memory _signature) external nonReentrant returns (OptionInfo memory) {
         // TODO: check that index is valid
         require(valid_collaterals[_offer._token], "Token collateral address is not approved.");
@@ -142,6 +152,23 @@ contract Exchange is ERC721, ReentrancyGuard {
         return option;
     }
 
+    /**
+    * @notice Cancel an option that hasn't been sold,
+    * @param _nonce nonce to mark as used.
+    **/
+    function cancel(uint256 _nonce) external {
+        require(!nonce_used_before[msg.sender][_nonce], 'Nonce invalid, option buyer has either cancelled/begun this option, or reused a nonce when signing.');
+        nonce_used_before[msg.sender][_nonce] = true;
+    }
+
+    /**
+    * @notice Exercise an option after it reaches maturity,
+    * @param _id id of the option 
+    **/
+    function exercise(uint256 _id) external nonReentrant returns (bool) {
+        return true;
+    }
+
     /*//////////////////////////////////////////////////////////////
                            INTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
@@ -162,7 +189,7 @@ contract Exchange is ERC721, ReentrancyGuard {
 
         return
             SignatureChecker.isValidSignatureNow(
-                 _signature.signer,
+                _signature.signer,
                 ECDSA.toEthSignedMessageHash(message),
                 _signature.signature
             );
@@ -175,14 +202,26 @@ contract Exchange is ERC721, ReentrancyGuard {
                 _offer._strike,
                 _offer._premium,
                 _offer._expiry,
-                _offer._token,
-                _offer._buyer,
-                _offer._seller
+                _offer._token
             );
     }
 
     function getEncodedSignature(Signature memory _signature) internal pure returns (bytes memory) {
         return abi.encodePacked(_signature.signer, _signature.nonce, _signature.expiry);
+    }
+    
+    /*//////////////////////////////////////////////////////////////
+                                HELPERS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+    * @notice Returns the option info struct for a given id,
+    * @param _id  id of the struct to fetch.
+    **/
+    function getOption(uint256 _id) public view returns (OptionInfo memory) {
+        OptionInfo memory _option = options[_id];
+
+        return _option;
     }
 
     /**
