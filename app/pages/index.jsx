@@ -49,7 +49,7 @@ export function CreateIndex() {
   const [collection, collectionInput] = useInput({ placeholder: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d", id: "collection" });
   const [name, nameInput] = useInput({ placeholder: "BAYC Hedonic Regression", id: "coefficients" });
   let shouldFetch = false
- 
+
   let { attributes, error } = useSWR(shouldFetch ? null :
     "//api.gradient.city/dashboard/nftfi/distributions/?address=0x741cB6A6a8dC16363666462769D8dEc996311466",
     fetcher
@@ -92,7 +92,7 @@ export function CreateIndex() {
           <h3 className="text-lg font-bold">Create a new index</h3>
           <p className="py-4">Description!</p>
 
-          <form 
+          <form
             onSubmit={(e) => {
               e.preventDefault()
               handleClick()
@@ -300,7 +300,8 @@ export function Content() {
           ))}
         </tbody>
       </table>
-      
+
+
       <CreateIndex />
     </div>
   )

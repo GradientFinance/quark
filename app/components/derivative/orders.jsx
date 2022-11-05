@@ -6,35 +6,40 @@ const orders = [
     type: 'Long',
     strike: '82',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    premium: '1'
   },
   {
     secondsAgo: '1',
     type: 'Long',
     strike: '82',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    premium: '1'
   },
   {
     secondsAgo: '1',
     type: 'Long',
     strike: '82',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    premium: '1'
   },
   {
     secondsAgo: '1',
     type: 'Long',
     strike: '82',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    premium: '1'
   },
   {
     secondsAgo: '1',
     type: 'Long',
     strike: '82',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    premium: '1'
   },
 ]
 
@@ -58,20 +63,22 @@ export function Orders() {
                     <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
                   </svg>
                 </th>
-                <th>Type</th>
-                <th>Strike</th>
-                <th>Expiration</th>
-                <th></th>
+                <th className="text-center">Type</th>
+                <th className="text-center">Strike</th>
+                <th className="text-center">Expires</th>
+                <th className="text-center">Lev</th>
+                <th className="text-center">Premium</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
                 <tr>
                   <td>{order.secondsAgo}s ago</td>
-                  <td>{order.type}</td>
-                  <td>{order.strike} ETH</td>
-                  <td>In {order.expiration} days</td>
-                  <td>{order.leverage}x</td>
+                  <td className="text-center">{order.type}</td>
+                  <td className="text-center">{order.strike} ETH</td>
+                  <td className="text-center">In {order.expiration} days</td>
+                  <td className="text-center">{order.leverage}x</td>
+                  <td className="text-center">{order.premium} ETH</td>
                 </tr>
               ))}
             </tbody>

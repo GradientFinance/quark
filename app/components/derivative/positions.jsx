@@ -1,37 +1,52 @@
 import React from "react";
+import { usePrepareContractWrite, useContractWrite } from 'wagmi'
+
 
 const orders = [
   {
+    confirmed: true,
     secondsAgo: '1',
-    type: 'Long',
+    type: 'Put',
     strike: '82',
     expiration: '23',
     leverage: '1'
   },
   {
+    confirmed: false,
     secondsAgo: '1',
-    type: 'Long',
+    type: 'Put',
     strike: '82',
     expiration: '23',
     leverage: '1'
   },
   {
+    confirmed: true,
     secondsAgo: '1',
-    type: 'Long',
+    type: 'Put',
     strike: '82',
     expiration: '23',
     leverage: '1'
   },
   {
+    confirmed: false,
     secondsAgo: '1',
-    type: 'Long',
+    type: 'Put',
     strike: '82',
     expiration: '23',
     leverage: '1'
   },
   {
+    confirmed: true,
     secondsAgo: '1',
-    type: 'Long',
+    type: 'Put',
+    strike: '82',
+    expiration: '23',
+    leverage: '1'
+  },
+  {
+    confirmed: true,
+    secondsAgo: '1',
+    type: 'Put',
     strike: '82',
     expiration: '23',
     leverage: '1'
@@ -39,8 +54,24 @@ const orders = [
 ]
 
 export function ActivePositions() {
+  const { acceptConfig } = usePrepareContractWrite({
+    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+    abi: [
+      {
+        name: 'accept',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [],
+        outputs: [],
+      },
+    ],
+    functionName: 'accept',
+  })
+
+  const { acceptWrite } = useContractWrite(acceptConfig)
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto max-h-min">
       <table className="table table-compact w-full">
         <thead>
           <tr>
@@ -49,9 +80,12 @@ export function ActivePositions() {
                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
               </svg>
             </th>
-            <th>Type</th>
-            <th>Strike</th>
-            <th>Expiration</th>
+            <th className="text-center">Type</th>
+            <th className="text-center">PnL</th>
+            <th className="text-center">Strike</th>
+            <th className="text-center">Expiration</th>
+            <th className="text-center">Leverage</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>
@@ -59,10 +93,37 @@ export function ActivePositions() {
           {orders.map((order, index) => (
             <tr>
               <td>{order.secondsAgo}s ago</td>
-              <td>{order.type}</td>
-              <td>{order.strike} ETH</td>
-              <td>In {order.expiration} days</td>
-              <td>{order.leverage}x</td>
+              <td className="text-center">{order.type}</td>
+              <td className="text-center">
+                {order.confirmed ?
+                  <div className="badge badge-success">24%</div> : ""}
+              </td>
+              <td className="text-center">{order.strike} ETH</td>
+              <td className="text-center">In {order.expiration} days</td>
+              <td className="text-center">{order.leverage}x</td>
+              <td>
+                {order.confirmed ?
+                  <div>
+                    <button class="btn btn-xs btn-outline">
+                      Close
+                    </button>
+                  </div> :
+                  <div>
+                    <btn class="btn btn-xs btn-warning">
+                      Cancel
+                    </btn>
+                  </div>}
+              </td>
+              <td>
+                {order.confirmed ?
+                  '' :
+
+                  <div>
+                    <btn class="btn btn-xs btn-success" disabled={!acceptWrite} onClick={() => acceptWrite?.()}>
+                      Accept
+                    </btn>
+                  </div>}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -91,7 +152,7 @@ export function Positions() {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
           </svg>
-          Active positions
+          All Positions
         </h2>
         {orders.length > 0 ? <ActivePositions /> : <NoActivePositions />}
       </div>
