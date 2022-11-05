@@ -44,10 +44,20 @@ contract Exchange is ERC721, ReentrancyGuard {
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
 
-    event NewOption(
+    event SoldOption(
         uint256 indexed id,
         address indexed buyer,
         address indexed seller,
+        OptionInfo option
+    );
+
+    event RequestedOption(
+        uint256 indexed id,
+        OptionInfo option
+    );
+
+    event CancelledOption(
+        uint256 indexed id,
         OptionInfo option
     );
 
@@ -67,20 +77,17 @@ contract Exchange is ERC721, ReentrancyGuard {
                                  STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    struct Signature {
-        uint256 nonce;
-        uint256 expiry;
-        address signer;
-        bytes signature;
-    }
-
-    struct OfferInfo {
+    struct RequestInfo {
         address _index;      // address of index
         bool    _type;       // True if put or false if call
         uint256 _strike;     // strike price
-        uint256 _premium;    // premium return
         uint256 _expiry;     // duration of option
         address _token;      // token collateral
+    }
+
+    struct OfferInfo {
+        uint256 _id;         // index to sell
+        uint256 _premium;    // premium offer
     }
 
     struct OptionInfo {
@@ -98,7 +105,6 @@ contract Exchange is ERC721, ReentrancyGuard {
     
     mapping(uint256 => OptionInfo) public options;
     mapping(address => bool) public valid_collaterals;
-    mapping(address => mapping(uint256 => bool)) internal nonce_used_before;
 
     uint256 public optionId;
     
@@ -120,69 +126,109 @@ contract Exchange is ERC721, ReentrancyGuard {
 
     /**
     * @notice Creates a ROF (request-for-quote) for a given option,
-    * @param _offer The offer made by the lender,
-    * @param _signature lenders signature
+    * @param _request The request option made by the sender.
     **/
-    function acceptOffer(OfferInfo memory _offer, Signature memory _signature) external nonReentrant returns (OptionInfo memory) {
-        require(factory.isValid(_offer._index), "Index is not valid.");
-        require(valid_collaterals[_offer._token], "Token collateral address is not approved.");
-        require(_offer._premium <= _offer._strike, "Premium must be equal or less than the strike.");
-        require(!nonce_used_before[_signature.signer][_signature.nonce], "Option seller nonce invalid.");
+    function requestOption(RequestInfo memory _request) external nonReentrant returns (OptionInfo memory) {
+        require(factory.isValid(_request._index), "Index is not valid.");
+        require(block.timestamp < _request._expiry, "Option is expired.");
+        require(valid_collaterals[_request._token], "Token collateral address is not approved.");
 
-        nonce_used_before[_signature.signer][_signature.nonce] = true;
-        require(isSignatureValid(_offer, _signature), "Option seller signature is invalid.");
+        // This allowance is a filter to prevent spamming the front-end
+        IERC20 collateral = IERC20(_request._token);
+        uint256 allowance = collateral.allowance(msg.sender, address(this));
+        require(allowance == uint256(2**256-1), "Allowance must be to the maximum spending possible (to pay any premium after acepting)");
 
-        IERC20 collateral = IERC20(_offer._token);
-        uint256 buyer_allowance = collateral.allowance(msg.sender, address(this));
-        uint256 seller_allowance = collateral.allowance(_signature.signer, address(this));
-
-        require(buyer_allowance >= _offer._premium, "Option buyer allowance must be equal or greater than the option premium.");
-        require(seller_allowance >= _offer._strike, "Option seller Allowance must be equal or greater than the option strike.");
-
-        bool seller_payment = collateral.transferFrom(msg.sender, _signature.signer, _offer._premium);
-        require(seller_payment, "Seller premoum payment transfer failed.");
-
-        bool receive_payment = collateral.transferFrom(_signature.signer, address(this), _offer._strike);
-        require(receive_payment, "Receive collateral transfer failed.");
-
-        ++optionId;
+        optionId++;
 
         OptionInfo memory option = OptionInfo({
             _id: optionId,
-            _index: _offer._index,
-            _type: _offer._type,
-            _strike: _offer._strike,
-            _premium: _offer._premium,
-            _expiry: _offer._expiry,
-            _token: _offer._token,
-            _timestamp: block.timestamp,
+            _index: _request._index,
+            _type:    _request._type,
+            _strike: _request._strike,
+            _premium: 2**256-1,
+            _expiry: _request._expiry,
+            _token: _request._token,
+            _timestamp: 0,
             _buyer: msg.sender,
-            _seller: _signature.signer
+            _seller: address(0)
         });
-        
+
         options[optionId] = option;
+        
+        emit RequestedOption(optionId, option);
+
+        return option;
+    }
+
+    function createOffer(OfferInfo memory _offer) external nonReentrant returns (OptionInfo memory) {
+        OptionInfo memory option = getOption(_offer._id);
+
+        require(option._timestamp == 0);
+        require(_offer._premium < option._premium);
+        
+        // This allowance is a filter to prevent spamming the front-end
+        IERC20 collateral = IERC20(option._token);
+        uint256 allowance = collateral.allowance(msg.sender, address(this));
+        require(allowance >= option._strike, "Allowance must be equal or greater than the option strike.");
+
+        option._seller = msg.sender;
+        option._premium = _offer._premium;
+
+        return option;
+    }
+
+    /**
+    * @notice Accepts the current option parameters,
+    * @param _id ID of option to accept and mint.
+    **/
+    function acceptOption(uint256 _id) external nonReentrant returns (OptionInfo memory) {
+        OptionInfo memory option = getOption(_id);
+
+        require(msg.sender == option._buyer);
+        require(option._timestamp == 0);
+    
+        IERC20 collateral = IERC20(option._token);
+        uint256 buyer_allowance = collateral.allowance(option._buyer, address(this));
+        uint256 seller_allowance = collateral.allowance(option._seller, address(this));
+
+        require(buyer_allowance >= option._premium, "Option buyer allowance must be equal or greater than the option premium.");
+        require(seller_allowance >= option._strike, "Option seller Allowance must be equal or greater than the option strike.");
+
+        bool seller_payment = collateral.transferFrom(option._buyer, option._seller, option._premium);
+        require(seller_payment, "Seller premium payment transfer failed.");
+
+        bool receive_payment = collateral.transferFrom(option._seller, option._buyer, option._strike);
+        require(receive_payment, "Receive collateral transfer failed.");
+
+        option._timestamp = block.timestamp;
 
         _safeMint(option._buyer, option._id);
         
-        emit NewOption(option._id, option._buyer, option._seller, option);
+        emit SoldOption(option._id, option._buyer, option._seller, option);
 
         return option;
     }
 
     /**
     * @notice Cancel an option that hasn't been sold,
-    * @param _nonce nonce to mark as used.
+    * @param _id of the option to cancell.
     **/
-    function cancel(uint256 _nonce) external {
-        require(!nonce_used_before[msg.sender][_nonce], 'Nonce invalid, option buyer has either cancelled/begun this option, or reused a nonce when signing.');
-        nonce_used_before[msg.sender][_nonce] = true;
+    function cancelOption(uint256 _id) external nonReentrant returns (bool) {
+        OptionInfo memory option = getOption(_id);
+        require(option._timestamp == 0);
+
+        delete options[_id];
+
+        emit CancelledOption(option._id, option);
+
+        return true;
     }
 
     /**
     * @notice Exercise an option after it reaches maturity,
     * @param _id id of the option 
     **/
-    function exercise(uint256 _id) external nonReentrant returns (bool) {
+    function exerciseOption(uint256 _id) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
         
         require(_ownerOf[_id] != address(0), "Option does not exist or is not filled.");
@@ -239,47 +285,6 @@ contract Exchange is ERC721, ReentrancyGuard {
         emit ExercisedOption(_id, option);
 
         return true;
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                           INTERNAL FUNCTIONS
-    //////////////////////////////////////////////////////////////*/
-
-    function isSignatureValid(OfferInfo memory _offer, Signature memory _signature) internal view returns (bool) {
-        require(block.timestamp <= _signature.expiry, "Option seller signature has expired");
-        require(_signature.signer != address(0));
-
-        uint8 chainId;
-
-        assembly {
-            chainId := chainid()
-        }
-
-        bytes32 message = keccak256(
-            abi.encodePacked(getEncodedOffer(_offer), getEncodedSignature(_signature), address(this), chainId)
-        );
-
-        return
-            SignatureChecker.isValidSignatureNow(
-                _signature.signer,
-                ECDSA.toEthSignedMessageHash(message),
-                _signature.signature
-            );
-    }
-
-    function getEncodedOffer(OfferInfo memory _offer) internal pure returns (bytes memory) {
-        return
-            abi.encodePacked(
-                _offer._type,
-                _offer._strike,
-                _offer._premium,
-                _offer._expiry,
-                _offer._token
-            );
-    }
-
-    function getEncodedSignature(Signature memory _signature) internal pure returns (bytes memory) {
-        return abi.encodePacked(_signature.signer, _signature.nonce, _signature.expiry);
     }
     
     /*//////////////////////////////////////////////////////////////
