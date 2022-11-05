@@ -116,10 +116,9 @@ contract Exchange is ERC721, ReentrancyGuard {
 
     /**
     * @notice Defines the accepted collaterals as well as the factory address to verify indeces,
-    * @param _factory Address of index factory.
     **/
-    constructor(address _factory) ERC721("Exchange Option", "OPTION") {
-        factory = IIndexFactory(_factory);
+    constructor() ERC721("Exchange Option", "OPTION") {
+        factory = IIndexFactory(address(0xd4962531D7C851240eFe7f5a8e53d1e10C084A0f));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -128,9 +127,11 @@ contract Exchange is ERC721, ReentrancyGuard {
 
     /**
     * @notice Creates a ROF (request-for-quote) for a given option,
-    * @param _request The request option made by the sender.
+    * @param _data The request option made by the sender in bytes.
     **/
-    function requestOption(RequestInfo memory _request) external nonReentrant returns (OptionInfo memory) {
+    function requestOption(bytes memory _data) external nonReentrant returns (OptionInfo memory) {
+        RequestInfo memory _request = abi.decode(_data, (RequestInfo));
+
         require(factory.isValid(_request._index), "Index is not valid.");
         require(block.timestamp < _request._expiry, "Option is expired.");
 
@@ -166,9 +167,10 @@ contract Exchange is ERC721, ReentrancyGuard {
 
     /**
     * @notice Creates an option sell offer,
-    * @param _offer offer struct containing premium and ID of targetted option.
+    * @param _data offer struct in bytes containing premium and ID of targetted option.
     **/
-    function createOffer(OfferInfo memory _offer) external nonReentrant returns (OptionInfo memory) {
+    function createOffer(bytes memory _data) external nonReentrant returns (OptionInfo memory) {
+        OfferInfo memory _offer = abi.decode(_data, (OfferInfo));
         OptionInfo memory option = getOption(_offer._id);
 
         require(option._timestamp == 0);
@@ -252,7 +254,7 @@ contract Exchange is ERC721, ReentrancyGuard {
 
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
-        
+
         IERC20 collateral = IERC20(_denomination);
 
         address receiver = _ownerOf[_id];

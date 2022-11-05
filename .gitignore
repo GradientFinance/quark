@@ -10,3 +10,4 @@ out/
 *.sh
 venv
 /app
+contracts/script/deploy/
