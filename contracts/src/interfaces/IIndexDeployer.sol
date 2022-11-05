@@ -12,6 +12,7 @@ interface IIndexDeployer {
             int256 intercept,
             string[] memory attributes,
             address collection,
+            address uma,
             string memory name
         );
 }

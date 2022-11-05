@@ -15,6 +15,7 @@ contract IndexDeployer {
         int256 intercept;
         string[] attributes;
         address collection;
+        address uma;
         string name;
     }
 
@@ -30,10 +31,11 @@ contract IndexDeployer {
         int256 intercept,
         string[] memory attributes,
         address collection,
+        address uma,
         string memory name
     ) internal returns (address index) {
-        parameters = Parameters({factory: factory, coefficients: coefficients, intercept: intercept, attributes: attributes, collection: collection, name: name});
-        index = address(new Index{salt: keccak256(abi.encode(coefficients, attributes, collection, name))}());
+        parameters = Parameters({factory: factory, coefficients: coefficients, intercept: intercept, attributes: attributes, collection: collection, uma: uma, name: name});
+        index = address(new Index{salt: keccak256(abi.encode(coefficients, attributes, collection, uma, name))}());
         delete parameters;
     }
 }

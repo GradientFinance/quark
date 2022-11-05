@@ -28,11 +28,15 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     mapping(string => address) public getIndex;
     mapping(address => bool) public isIndex;
 
+    address public immutable uma; 
+
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {}
+    constructor(address _uma) {
+        uma = _uma;
+    }
 
     /*//////////////////////////////////////////////////////////////
                             EXTERNAL FUNCTIONS
@@ -47,7 +51,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     ) external nonReentrant returns (address index) {
         require(getIndex[name] == address(0), "Index with given name already exists.");
 
-        index = deploy(address(this), coefficients, intercept, attributes, collection, name);
+        index = deploy(address(this), coefficients, intercept, attributes, collection, uma, name);
 
         getIndex[name] = index;
         isIndex[index] = true;

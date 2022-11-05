@@ -6,7 +6,7 @@ import {stdStorage, StdStorage, Test} from "forge-std/Test.sol";
 
 import {Utils} from "./utils/Utils.sol";
 import "../src/Exchange.sol";
-import "../src/Index.sol";
+import "../src/IndexFactory.sol";
 import "./mocks/ApeCoin.sol";
  
 contract BaseSetup is Test {
@@ -39,7 +39,7 @@ contract BaseSetup is Test {
         apecoin = new ApeCoin();
         collaterals.push(address(apecoin));
 
-        index = new Index();
+        index_factory = new IndexFactory();
 
         vm.prank(deployer);
         exchange = new Exchange(collaterals);
