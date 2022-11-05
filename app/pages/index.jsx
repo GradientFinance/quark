@@ -19,7 +19,22 @@ const indices = [
 
 export function Content() {
   return (
-    <div>
+    <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
+      <div className="hero">
+        <div className="hero-content flex-col lg:flex-row-reverse">
+          <img src="https://placeimg.com/260/400/arch" className="max-w-sm rounded-lg shadow-2xl" />
+          <div>
+            <h1 className="text-5xl font-bold">Price Feeds</h1>
+            <p className="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
+            <label htmlFor="my-modal-3" className="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Create Price Feed
+            </label>
+          </div>
+        </div>
+      </div>
       <table className="table w-full">
         <thead>
           <tr>
@@ -116,8 +131,10 @@ export function Content() {
               <td>{index.price} ETH</td>
               <td>{index.volume}</td>
               <td>
-                <span className="badge badge-success mr-2"><b className='mr-1'>1D:</b>{index.volatility}%</span><br />
-                <span className="badge badge-ghost mr-2"><b className='mr-1'>7D:</b>{index.volatility}%</span>
+                <a href='#'>
+                  <span className="badge badge-success"><b className='mr-1'>1D:</b>{index.volatility}%</span><br />
+                  <span className="badge badge-error"><b className='mr-1'>7D:</b>-{index.volatility}%</span>
+                </a>
               </td>
               <td>
                 <a className="tooltip tooltip-bottom" data-tip="Entire collection is tracked" href='#'>
@@ -159,10 +176,14 @@ export function Content() {
               </td>
               <td>
                 {index.manipulationRisk}
-                {index.manipulationRisk >= 0.4 ? <span className="ml-3 badge badge-primary">{index.openSource ? 'Medium' : 'No'}</span> : ''}
+                <a href='#'>
+                  {index.manipulationRisk >= 0.4 ? <span className="ml-3 badge badge-warning">{index.openSource ? 'Medium' : 'No'}</span> : ''}
+                </a>
               </td>
               <td>
-                <span className="badge badge-ghost">{index.openSource ? 'Yes' : 'No'}</span>
+                <a href='//github.com' className="tooltip tooltip-bottom" data-tip="Open GitHub">
+                  <span className="badge badge-ghost">{index.openSource ? 'Yes' : 'No'}</span>
+                </a>
               </td>
             </tr>
           ))}
@@ -175,7 +196,7 @@ export function Content() {
 export default function App() {
   useEffect(() => {
     document.title = "Indices";
-    document.documentElement.setAttribute("data-theme", "cupcake");
+    document.documentElement.setAttribute("data-theme", "night");
     document.documentElement.className = 'bg-base-300';
   });
 

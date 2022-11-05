@@ -5,7 +5,7 @@ const alchemyId = process.env.ALCHEMY_ID;
 
 const client = createClient(
   getDefaultClient({
-    appName: "Your App Name",
+    appName: "App",
     alchemyId: alchemyId,
   }),
 );
@@ -14,7 +14,7 @@ export function Page({ children }) {
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
-        { children }
+        {children}
       </ConnectKitProvider>
     </WagmiConfig>
   );
