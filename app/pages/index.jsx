@@ -10,7 +10,7 @@ const indices = [
     price: 28.04,
     tracking: 'All BAYC',
     volume: '2817 ETH',
-    volatility: '42.5%',
+    volatility: 42.5,
     accuracy: '98% R^2 (20% MEA)',
     manipulationRisk: 0.7,
     openSource: true,
@@ -19,7 +19,7 @@ const indices = [
 
 export function Content() {
   return (
-    <div className="overflow-x-auto">
+    <div>
       <table className="table w-full">
         <thead>
           <tr>
@@ -95,52 +95,67 @@ export function Content() {
             <tr key={index.id}>
               <td>
                 <div className="flex items-center space-x-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle w-12 h-12">
+                  <div className="avatar online placeholder">
+                    <div className="bg-neutral-focus text-neutral-content rounded-full w-12">
                       <img src={index.imgUrl} alt="Avatar Tailwind CSS Component" />
                     </div>
                   </div>
                   <div>
-                    <div className="font-bold">Hart Hagerty</div>
-                    <span className="badge badge-ghost">Collection-wide</span>
+                    <div className="font-bold">Hedonic Price Index</div>
+                    <a href='#'>
+                      <span className="badge badge-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2">
+                          <path fill-rule="evenodd" d="M9.638 1.093a.75.75 0 01.724 0l2 1.104a.75.75 0 11-.724 1.313L10 2.607l-1.638.903a.75.75 0 11-.724-1.313l2-1.104zM5.403 4.287a.75.75 0 01-.295 1.019l-.805.444.805.444a.75.75 0 01-.724 1.314L3.5 7.02v.73a.75.75 0 01-1.5 0v-2a.75.75 0 01.388-.657l1.996-1.1a.75.75 0 011.019.294zm9.194 0a.75.75 0 011.02-.295l1.995 1.101A.75.75 0 0118 5.75v2a.75.75 0 01-1.5 0v-.73l-.884.488a.75.75 0 11-.724-1.314l.806-.444-.806-.444a.75.75 0 01-.295-1.02zM7.343 8.284a.75.75 0 011.02-.294L10 8.893l1.638-.903a.75.75 0 11.724 1.313l-1.612.89v1.557a.75.75 0 01-1.5 0v-1.557l-1.612-.89a.75.75 0 01-.295-1.019zM2.75 11.5a.75.75 0 01.75.75v1.557l1.608.887a.75.75 0 01-.724 1.314l-1.996-1.101A.75.75 0 012 14.25v-2a.75.75 0 01.75-.75zm14.5 0a.75.75 0 01.75.75v2a.75.75 0 01-.388.657l-1.996 1.1a.75.75 0 11-.724-1.313l1.608-.887V12.25a.75.75 0 01.75-.75zm-7.25 4a.75.75 0 01.75.75v.73l.888-.49a.75.75 0 01.724 1.313l-2 1.104a.75.75 0 01-.724 0l-2-1.104a.75.75 0 11.724-1.313l.888.49v-.73a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+                        </svg>
+                        Cryptopunks
+                      </span>
+                    </a>
                   </div>
                 </div>
               </td>
               <td>{index.price} ETH</td>
               <td>{index.volume}</td>
               <td>
-                <div>
-                  <span className="badge badge-success mr-2">{index.volatility}</span>
-                  <span className="badge badge-ghost">{index.volatility}</span>
-                </div>
+                <span className="badge badge-success mr-2"><b className='mr-1'>1D:</b>{index.volatility}%</span><br />
+                <span className="badge badge-ghost mr-2"><b className='mr-1'>7D:</b>{index.volatility}%</span>
               </td>
               <td>
-                <div className="avatar-group -space-x-6">
-                  <div className="avatar">
-                    <div className="w-12">
-                      <img src="https://placeimg.com/192/192/people" />
+                <a className="tooltip tooltip-bottom" data-tip="Entire collection is tracked" href='#'>
+                  <div className="avatar-group -space-x-6">
+                    <div className="avatar">
+                      <div className="w-12">
+                        <img src="https://img.seadn.io/files/6aa7878172728461d4d670c0042cabf1.png?fit=max&w=1000" />
+                      </div>
+                    </div>
+                    <div className="avatar">
+                      <div className="w-12">
+                        <img src="https://img.seadn.io/files/1b246fd7b45666783491471ad57d9295.png?fit=max&w=1000" />
+                      </div>
+                    </div>
+                    <div className="avatar">
+                      <div className="w-12">
+                        <img src="https://img.seadn.io/files/dfc7ff5a7feab944d0c76213495d08a8.png?fit=max&w=1000" />
+                      </div>
+                    </div>
+                    <div className="avatar placeholder">
+                      <div className="w-12 bg-primary-focus text-primary-content">
+                        <span>+99</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="avatar">
-                    <div className="w-12">
-                      <img src="https://placeimg.com/192/192/people" />
-                    </div>
-                  </div>
-                  <div className="avatar">
-                    <div className="w-12">
-                      <img src="https://placeimg.com/192/192/people" />
-                    </div>
-                  </div>
-                  <div className="avatar placeholder">
-                    <div className="w-12 bg-accent-focus text-accent-content">
-                      <span>+99</span>
-                    </div>
-                  </div>
-                </div>
+                </a>
 
               </td>
               <td>
-                98% R<sup>2</sup> <span className="badge badge-ghost badge-sm ml-2">5.05% error</span>
+                <div className="flex items-center">
+                  <div className="tooltip tooltip-bottom" data-tip="Verified with zkSNARKs">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2">
+                      <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  98% R<sup>2</sup>
+                </div>
+                <span className="badge badge-ghost ml-4">5.05% error</span>
               </td>
               <td>
                 {index.manipulationRisk}
