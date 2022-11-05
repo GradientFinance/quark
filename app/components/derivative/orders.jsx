@@ -1,6 +1,6 @@
 import React from "react";
 
-const sales = [
+const orders = [
   {
     secondsAgo: '1',
     type: 'Long',
@@ -62,13 +62,13 @@ export function Orders() {
               </tr>
             </thead>
             <tbody>
-              {sales.map((sale, index) => (
+              {orders.map((order, index) => (
                 <tr>
-                  <td>{sale.secondsAgo}s ago</td>
-                  <td>{sale.type}</td>
-                  <td>{sale.strike} ETH</td>
-                  <td>In {sale.expiration} days</td>
-                  <td>{sale.leverage}x</td>
+                  <td>{order.secondsAgo}s ago</td>
+                  <td>{order.type}</td>
+                  <td>{order.strike} ETH</td>
+                  <td>In {order.expiration} days</td>
+                  <td>{order.leverage}x</td>
                 </tr>
               ))}
             </tbody>
