@@ -1,6 +1,7 @@
 import { useEffect, React } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
+import { Form } from "components/derivative/form";
 import dynamic from "next/dynamic";
 
 const ChartIndex = dynamic(() => import("../components/derivative/chart"), {
@@ -17,7 +18,7 @@ export function Content() {
           </div>
         </div>
         <div className="col-span-1">
-          Form
+          <Form index={"placeholder"} />ƒ
         </div>
         <div className="col-span-1">
           Index Info
