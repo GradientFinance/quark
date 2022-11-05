@@ -12,6 +12,7 @@ interface IIndexDeployer {
             string[] memory attributes,
             address collection,
             address uma,
+            address denomination,
             string memory name
         );
 }

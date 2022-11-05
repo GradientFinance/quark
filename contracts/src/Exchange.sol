@@ -8,6 +8,8 @@ import "solmate/tokens/ERC721.sol";
 
 interface IIndex {
     function getPrice() external view returns (uint256);
+
+    function getDenomination() external view returns (address);
 }
 
 interface IIndexFactory {
@@ -79,33 +81,32 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     struct RequestInfo {
-        address _index;      // Index address
-        bool    _type;       // Type of option: true if put or false if call
-        uint256 _strike;     // Strike price
-        uint256 _expiry;     // Expiration date (in UNIX seconds) of option
-        address _token;      // Option collateral token address
+        address _index;         // Index address
+        bool    _type;          // Type of option: true if put or false if call
+        uint256 _strike;        // Strike price
+        uint256 _expiry;        // Expiration date (in UNIX seconds) of option
+        address _denomination;  // Option collateral token address
     }
 
     struct OfferInfo {
-        uint256 _id;         // ID of option offering to
-        uint256 _premium;    // Premium offer
+        uint256 _id;            // ID of targetted option
+        uint256 _premium;       // Premium offer
     }
 
     struct OptionInfo {
-        uint256 _id;         // ID of option
-        address _index;      // Index address
-        bool    _type;       // Type of option: true if put or false if call
-        uint256 _strike;     // Strike price
-        uint256 _premium;    // Premium return
-        uint256 _expiry;     // expiration in unix timestamp
-        address _token;      // token collateral
-        uint256 _timestamp;  // Expiration date (in UNIX seconds) of option
-        address _buyer;      // Address who initially buys the option (different to the address that can excercise the option -> NFT holder)
-        address _seller;     // Address who sells the option
+        uint256 _id;            // ID of option
+        address _index;         // Index address
+        bool    _type;          // Type of option: true if put or false if call
+        uint256 _strike;        // Strike price
+        uint256 _premium;       // Premium return
+        uint256 _expiry;        // expiration in unix timestamp
+        address _denomination;  // collateral token denomination
+        uint256 _timestamp;     // Expiration date (in UNIX seconds) of option
+        address _buyer;         // Address who initially buys the option (different to the address that can excercise the option -> NFT holder)
+        address _seller;        // Address who sells the option
     }
     
     mapping(uint256 => OptionInfo) public options;
-    mapping(address => bool) public valid_collaterals;
 
     uint256 public optionId;
     
@@ -113,11 +114,11 @@ contract Exchange is ERC721, ReentrancyGuard {
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address[] memory _collaterals, address _factory) ERC721("Exchange Option", "OPTION") {
-        for (uint i = 0; i < _collaterals.length; i++) {
-            valid_collaterals[_collaterals[i]] = true;
-        }
-
+    /**
+    * @notice Defines the accepted collaterals as well as the factory address to verify indeces,
+    * @param _factory Address of index factory.
+    **/
+    constructor(address _factory) ERC721("Exchange Option", "OPTION") {
         factory = IIndexFactory(_factory);
     }
 
@@ -132,10 +133,12 @@ contract Exchange is ERC721, ReentrancyGuard {
     function requestOption(RequestInfo memory _request) external nonReentrant returns (OptionInfo memory) {
         require(factory.isValid(_request._index), "Index is not valid.");
         require(block.timestamp < _request._expiry, "Option is expired.");
-        require(valid_collaterals[_request._token], "Token collateral address is not approved.");
+
+        IIndex index = IIndex(_request._index);
+        address _denomination = index.getDenomination();
 
         // This allowance is a filter to prevent spamming the front-end
-        IERC20 collateral = IERC20(_request._token);
+        IERC20 collateral = IERC20(_denomination);
         uint256 allowance = collateral.allowance(msg.sender, address(this));
         require(allowance == uint256(2**256-1), "Allowance must be to the maximum spending possible (to pay any premium after acepting)");
 
@@ -148,7 +151,7 @@ contract Exchange is ERC721, ReentrancyGuard {
             _strike: _request._strike,
             _premium: 2**256-1,
             _expiry: _request._expiry,
-            _token: _request._token,
+            _denomination: _denomination,
             _timestamp: 0,
             _buyer: msg.sender,
             _seller: address(0)
@@ -171,8 +174,11 @@ contract Exchange is ERC721, ReentrancyGuard {
         require(option._timestamp == 0);
         require(_offer._premium < option._premium);
         
+        IIndex index = IIndex(option._index);
+        address _denomination = index.getDenomination();
+
         // This allowance is a filter to prevent spamming the front-end
-        IERC20 collateral = IERC20(option._token);
+        IERC20 collateral = IERC20(_denomination);
         uint256 allowance = collateral.allowance(msg.sender, address(this));
         require(allowance >= option._strike, "Allowance must be equal or greater than the option strike.");
 
@@ -191,8 +197,11 @@ contract Exchange is ERC721, ReentrancyGuard {
 
         require(msg.sender == option._buyer);
         require(option._timestamp == 0);
+
+        IIndex index = IIndex(option._index);
+        address _denomination = index.getDenomination();
     
-        IERC20 collateral = IERC20(option._token);
+        IERC20 collateral = IERC20(_denomination);
         uint256 buyer_allowance = collateral.allowance(option._buyer, address(this));
         uint256 seller_allowance = collateral.allowance(option._seller, address(this));
 
@@ -240,8 +249,11 @@ contract Exchange is ERC721, ReentrancyGuard {
         require(_ownerOf[_id] != address(0), "Option does not exist or is not filled.");
         require(block.timestamp > option._expiry, "Option not expired.");
     
+
         IIndex index = IIndex(option._index);
-        IERC20 collateral = IERC20(option._token);
+        address _denomination = index.getDenomination();
+        
+        IERC20 collateral = IERC20(_denomination);
 
         address receiver = _ownerOf[_id];
         uint256 price = index.getPrice();

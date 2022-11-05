@@ -21,6 +21,7 @@ contract Index {
     int256 public intercept;
     string public name;
     string[] public attributes;
+    address public denomination;
 
     OptimisticOracleV2Interface oracle;
 
@@ -39,7 +40,7 @@ contract Index {
     //////////////////////////////////////////////////////////////*/
 
     constructor() {
-        (factory, coefficients, intercept, attributes, collection, uma, name) = IIndexDeployer(msg.sender).parameters();
+        (factory, coefficients, intercept, attributes, collection, uma, denomination, name) = IIndexDeployer(msg.sender).parameters();
 
         // Define the Optimistic oracle with the given UMA address.
         oracle = OptimisticOracleV2Interface(uma);
@@ -50,7 +51,9 @@ contract Index {
     //////////////////////////////////////////////////////////////*/
     
     function getPrice(int256[] memory _characteristics, uint256 indexNumber) external view returns (int256) {
-        return getRefPrice(_characteristics, false) * index[indexNumber];
+        // 10 eth
+        return 10000000000000000000;
+        // return getRefPrice(_characteristics, false) * index[indexNumber];
     }
 
     // Submit a data request to the Optimistic oracle.
@@ -73,6 +76,10 @@ contract Index {
     // Fetch the resolved price from the Optimistic Oracle that was settled.
     function getSettledData() public view returns (int256) {
         return oracle.getRequest(address(this), identifier, requestTime, ancillaryData).resolvedPrice;
+    }
+
+    function getDenomination() external view returns (address) {
+        return denomination;
     }
 
     /*//////////////////////////////////////////////////////////////

@@ -16,6 +16,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
         int256 intercept,
         string[] attributes,
         address indexed collection,
+        address denomination,
         string indexed name,
         address index
     );
@@ -27,6 +28,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     // Store all the created indeces.
     mapping(string => address) public getIndex;
     mapping(address => bool) public isIndex;
+    mapping(address => bool) public valid_denomination;
 
     address public immutable uma; 
 
@@ -34,7 +36,11 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address _uma) {
+    constructor(address[] memory _denominations, address _uma) {
+        for (uint i = 0; i < _denominations.length; i++) {
+            valid_denomination[_denominations[i]] = true;
+        }
+
         uma = _uma;
     }
 
@@ -47,16 +53,18 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
         int256 intercept,
         string[] memory attributes,
         address collection,
+        address denomination,
         string memory name
     ) external nonReentrant returns (address index) {
         require(getIndex[name] == address(0), "Index with given name already exists.");
+        require(valid_denomination[denomination], "Collateral denomination token is not approved.");
 
-        index = deploy(address(this), coefficients, intercept, attributes, collection, uma, name);
+        index = deploy(address(this), coefficients, intercept, attributes, collection, uma, denomination, name);
 
         getIndex[name] = index;
         isIndex[index] = true;
 
-        emit IndexCreated(coefficients, intercept, attributes, collection, name, index);
+        emit IndexCreated(coefficients, intercept, attributes, collection, denomination, name, index);
     }
 
     function isValid(address index) external view returns (bool) {
