@@ -7,7 +7,35 @@ const sales = [
     strike: '82',
     expiration: '23',
     leverage: '1'
-  }
+  },
+  {
+    secondsAgo: '1',
+    type: 'Long',
+    strike: '82',
+    expiration: '23',
+    leverage: '1'
+  },
+  {
+    secondsAgo: '1',
+    type: 'Long',
+    strike: '82',
+    expiration: '23',
+    leverage: '1'
+  },
+  {
+    secondsAgo: '1',
+    type: 'Long',
+    strike: '82',
+    expiration: '23',
+    leverage: '1'
+  },
+  {
+    secondsAgo: '1',
+    type: 'Long',
+    strike: '82',
+    expiration: '23',
+    leverage: '1'
+  },
 ]
 
 export function Orders() {
