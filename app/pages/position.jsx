@@ -44,7 +44,7 @@ export function Content() {
 export default function App() {
   useEffect(() => {
     document.title = "Indices";
-    document.documentElement.setAttribute("data-theme", "night");
+    document.documentElement.setAttribute("data-theme", "cupcake");
     document.documentElement.className = 'bg-base-300';
   });
 

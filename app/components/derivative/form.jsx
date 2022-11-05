@@ -51,33 +51,33 @@ export function Long({ setShortActive }) {
         <div className="divider text-base-content/60 m-2">Long Put</div>
         <dl className="mb-4 space-y-2">
           <div className="flex items-center justify-between">
-            <dt className="text-sm text-gray-600">Strike</dt>
-            <dd className="text-sm font-medium text-gray-900">$99.00</dd>
+            <dt className="text-sm text-base-600">Strike</dt>
+            <dd className="text-sm font-medium text-base-900">$99.00</dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="flex items-center text-sm text-base-600">
               <span>Expiration</span>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">$5.00</dd>
+            <dd className="text-sm font-medium text-base-900">$5.00</dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="flex text-sm text-gray-600">
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="flex text-sm text-base-600">
               <span>Tax estimate</span>
-              <a href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
+              <a href="#" className="ml-2 flex-shrink-0 text-base-400 hover:text-base-500">
                 <span className="sr-only">Learn more about how tax is calculated</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                 </svg>
               </a>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">$8.32
+            <dd className="text-sm font-medium text-base-900">$8.32
 
               <button className="badge badge-ghost badge-sm">LTV 10%</button>
             </dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="text-base font-medium text-gray-900">Premium to pay</dt>
-            <dd className="text-base font-medium text-gray-900">$112.32</dd>
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="text-base font-medium text-base-900">Premium to pay</dt>
+            <dd className="text-base font-medium text-base-900">$112.32</dd>
           </div>
         </dl>
         <button className="btn btn-block space-x-2">
@@ -141,33 +141,33 @@ export function Short({ setLongActive }) {
         <div className="divider text-base-content/60 m-2">Long Put</div>
         <dl className="mb-4 space-y-2">
           <div className="flex items-center justify-between">
-            <dt className="text-sm text-gray-600">Strike</dt>
-            <dd className="text-sm font-medium text-gray-900">$99.00</dd>
+            <dt className="text-sm text-base-600">Strike</dt>
+            <dd className="text-sm font-medium text-base-900">$99.00</dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="flex items-center text-sm text-base-600">
               <span>Expiration</span>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">$5.00</dd>
+            <dd className="text-sm font-medium text-base-900">$5.00</dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="flex text-sm text-gray-600">
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="flex text-sm text-base-600">
               <span>Tax estimate</span>
-              <a href="#" className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
+              <a href="#" className="ml-2 flex-shrink-0 text-base-400 hover:text-base-500">
                 <span className="sr-only">Learn more about how tax is calculated</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                 </svg>
               </a>
             </dt>
-            <dd className="text-sm font-medium text-gray-900">$8.32
+            <dd className="text-sm font-medium text-base-900">$8.32
 
               <button className="badge badge-ghost badge-sm">LTV 10%</button>
             </dd>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-            <dt className="text-base font-medium text-gray-900">Premium to pay</dt>
-            <dd className="text-base font-medium text-gray-900">$112.32</dd>
+          <div className="flex items-center justify-between border-t border-base-200 pt-2">
+            <dt className="text-base font-medium text-base-900">Premium to pay</dt>
+            <dd className="text-base font-medium text-base-900">$112.32</dd>
           </div>
         </dl>
         <button className="btn btn-block space-x-2">

@@ -161,7 +161,6 @@ export function Content() {
                     </div>
                   </div>
                 </a>
-
               </td>
               <td>
                 <div className="flex items-center">
