@@ -58,6 +58,7 @@ contract Exchange is ERC721, ReentrancyGuard {
 
     event CancelledOption(
         uint256 indexed id,
+        address indexed canceller,
         OptionInfo option
     );
 
@@ -78,29 +79,29 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     struct RequestInfo {
-        address _index;      // address of index
-        bool    _type;       // True if put or false if call
-        uint256 _strike;     // strike price
-        uint256 _expiry;     // duration of option
-        address _token;      // token collateral
+        address _index;      // Index address
+        bool    _type;       // Type of option: true if put or false if call
+        uint256 _strike;     // Strike price
+        uint256 _expiry;     // Expiration date (in UNIX seconds) of option
+        address _token;      // Option collateral token address
     }
 
     struct OfferInfo {
-        uint256 _id;         // index to sell
-        uint256 _premium;    // premium offer
+        uint256 _id;         // ID of option offering to
+        uint256 _premium;    // Premium offer
     }
 
     struct OptionInfo {
-        uint256 _id;         // id of request
-        address _index;      // address of index
-        bool    _type;       // True if put or false if call
-        uint256 _strike;     // strike price
-        uint256 _premium;    // premium return
+        uint256 _id;         // ID of option
+        address _index;      // Index address
+        bool    _type;       // Type of option: true if put or false if call
+        uint256 _strike;     // Strike price
+        uint256 _premium;    // Premium return
         uint256 _expiry;     // expiration in unix timestamp
         address _token;      // token collateral
-        uint256 _timestamp;  // time when request was sent
-        address _buyer;      // option buyer address
-        address _seller;     // option seller address
+        uint256 _timestamp;  // Expiration date (in UNIX seconds) of option
+        address _buyer;      // Address who initially buys the option (different to the address that can excercise the option -> NFT holder)
+        address _seller;     // Address who sells the option
     }
     
     mapping(uint256 => OptionInfo) public options;
@@ -160,6 +161,10 @@ contract Exchange is ERC721, ReentrancyGuard {
         return option;
     }
 
+    /**
+    * @notice Creates an option sell offer,
+    * @param _offer offer struct containing premium and ID of targetted option.
+    **/
     function createOffer(OfferInfo memory _offer) external nonReentrant returns (OptionInfo memory) {
         OptionInfo memory option = getOption(_offer._id);
 
@@ -210,16 +215,17 @@ contract Exchange is ERC721, ReentrancyGuard {
     }
 
     /**
-    * @notice Cancel an option that hasn't been sold,
+    * @notice Cancel an option that hasn't been sold, which can be called by both the current pending seller or buyer,
     * @param _id of the option to cancell.
     **/
     function cancelOption(uint256 _id) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
         require(option._timestamp == 0);
+        require(msg.sender == option._buyer && msg.sender == option._seller);
 
         delete options[_id];
 
-        emit CancelledOption(option._id, option);
+        emit CancelledOption(option._id, msg.sender, option);
 
         return true;
     }
