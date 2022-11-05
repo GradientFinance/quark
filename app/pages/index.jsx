@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEffect, React } from 'react'
 import { Page } from 'components/ui/page'
+import { Navbar } from 'components/ui/navbar'
 
 export function Content() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
 
   return (
     <Page>
+      <Navbar />
       <Content />
     </Page>
   );
