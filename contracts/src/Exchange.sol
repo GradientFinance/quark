@@ -10,6 +10,10 @@ interface IIndex {
     function getPrice() external view returns (uint256);
 }
 
+interface IIndexFactory {
+    function isValid(address index) external view returns (bool);
+}
+
 interface IERC20 {
     function totalSupply() external view returns (uint256);
 
@@ -57,6 +61,7 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     string public constant baseURI = "https://link/";
+    IIndexFactory factory;
 
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
@@ -101,10 +106,12 @@ contract Exchange is ERC721, ReentrancyGuard {
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address[] memory collaterals) ERC721("Exchange Option", "OPTION") {
-        for (uint i = 0; i < collaterals.length; i++) {
-            valid_collaterals[collaterals[i]] = true;
+    constructor(address[] memory _collaterals, address _factory) ERC721("Exchange Option", "OPTION") {
+        for (uint i = 0; i < _collaterals.length; i++) {
+            valid_collaterals[_collaterals[i]] = true;
         }
+
+        factory = IIndexFactory(_factory);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -117,13 +124,13 @@ contract Exchange is ERC721, ReentrancyGuard {
     * @param _signature lenders signature
     **/
     function acceptOffer(OfferInfo memory _offer, Signature memory _signature) external nonReentrant returns (OptionInfo memory) {
-        // TODO: check that index is valid
+        require(factory.isValid(_offer._index), "Index is not valid.");
         require(valid_collaterals[_offer._token], "Token collateral address is not approved.");
         require(_offer._premium <= _offer._strike, "Premium must be equal or less than the strike.");
-        require(!nonce_used_before[_signature.signer][_signature.nonce], "Option buyer nonce invalid");
+        require(!nonce_used_before[_signature.signer][_signature.nonce], "Option seller nonce invalid.");
 
         nonce_used_before[_signature.signer][_signature.nonce] = true;
-        require(isSignatureValid(_offer, _signature), "Option seller signature is invalid");
+        require(isSignatureValid(_offer, _signature), "Option seller signature is invalid.");
 
         IERC20 collateral = IERC20(_offer._token);
         uint256 buyer_allowance = collateral.allowance(msg.sender, address(this));

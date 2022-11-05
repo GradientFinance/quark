@@ -58,4 +58,8 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
 
         emit IndexCreated(coefficients, intercept, attributes, collection, name, index);
     }
+
+    function isValid(address index) external view returns (bool) {
+        return isIndex[index];
+    }
 }
