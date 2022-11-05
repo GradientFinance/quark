@@ -12,7 +12,8 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     event IndexCreated(
-        uint256[] coefficients,
+        int256[] coefficients,
+        int256 intercept,
         string[] attributes,
         address indexed collection,
         string indexed name,
@@ -38,18 +39,19 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     function createIndex(
-        uint256[] memory coefficients,
+        int256[] memory coefficients,
+        int256 intercept,
         string[] memory attributes,
         address collection,
         string memory name
     ) external nonReentrant returns (address index) {
         require(getIndex[name] == address(0), "Index with given name already exists.");
 
-        index = deploy(address(this), coefficients, attributes, collection, name);
+        index = deploy(address(this), coefficients, intercept, attributes, collection, name);
 
         getIndex[name] = index;
         isIndex[index] = true;
 
-        emit IndexCreated(coefficients, attributes, collection, name, index);
+        emit IndexCreated(coefficients, intercept, attributes, collection, name, index);
     }
 }

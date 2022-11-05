@@ -8,7 +8,8 @@ interface IIndexDeployer {
         view
         returns (
             address factory,
-            uint256[] memory coefficients,
+            int256[] memory coefficients,
+            int256 intercept,
             string[] memory attributes,
             address collection,
             string memory name
