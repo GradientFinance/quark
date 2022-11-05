@@ -3,6 +3,8 @@ import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
 import { Form } from "components/derivative/form";
 import { Positions } from "components/derivative/positions";
+import { IndexInfo } from "components/derivative/index_panel";
+import { Bar } from "components/derivative/bar";
 import dynamic from "next/dynamic";
 
 const ChartIndex = dynamic(() => import("../components/derivative/chart"), {
@@ -13,6 +15,9 @@ export function Content() {
   return (
     <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
       <div className='w-full grid-cols-3 gap-4 overflow-y-hidden overflow-x-scroll px-10 pt-1 pb-10 xl:grid xl:overflow-x-auto xl:px-4 svelte-1n6ue57'>
+        <div className='col-span-3'>
+          <Bar />
+        </div>
         <div className="col-span-2">
           <div className="bg-white w-full rounded-xl p-6 shadow-xl">
             <ChartIndex width={880} height={517} />
@@ -22,7 +27,7 @@ export function Content() {
           <Form index={"placeholder"} />ƒ
         </div>
         <div className="col-span-1">
-          Index Info
+          <IndexInfo/>
         </div>
         <div className="col-span-1">
           Underlying
