@@ -1,7 +1,13 @@
-import { useState } from 'react'
-import { useEffect, React } from 'react'
+import { useEffect, useState, React } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from 'wagmi'
+import useSWR from "swr";
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const indices = [
   {
@@ -16,6 +22,112 @@ const indices = [
     openSource: true,
   },
 ]
+
+function useInput({ id, placeholder }) {
+  const [value, setValue] = useState("");
+  const input = <input value={value} onChange={e => setValue(e.target.value)} type="text" id={id} placeholder={placeholder} className="input input-bordered w-full max-w-xs" />;
+  return [value, input];
+}
+
+function fetchAttributes() {
+  const [shouldFetch, setShouldFetch] = React.useState(false);
+  const { data } = useSWR(shouldFetch ? null : "/api/users/1", fetcher);
+  function handleClick() {
+    setShouldFetch(true);
+  }
+  return (
+    <>
+      <button disable={shouldFetch} onClick={handleClick}>Fetch</button>
+      {data ? <h1>{data.fullName}</h1> : null}
+    </>
+  );
+}
+
+export function CreateIndex() {
+  const [coefficients, coefficientsInput] = useInput({ placeholder: "[-3317591, -20283840, -2194464]", id: "coefficients" });
+  const [intercept, interceptInput] = useInput({ placeholder: "14451278152419082240", id: "intercept" });
+  const [collection, collectionInput] = useInput({ placeholder: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d", id: "collection" });
+  const [name, nameInput] = useInput({ placeholder: "BAYC Hedonic Regression", id: "coefficients" });
+  let shouldFetch = false
+ 
+  let { attributes, error } = useSWR(shouldFetch ? null :
+    "//api.gradient.city/dashboard/nftfi/distributions/?address=0x741cB6A6a8dC16363666462769D8dEc996311466",
+    fetcher
+  );
+
+  const { config } = usePrepareContractWrite({
+    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+    abi: [
+      {
+        name: 'mint',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [{ internalType: 'uint32', name: 'tokenId', type: 'uint32' }],
+        outputs: [],
+      },
+    ],
+    functionName: 'mint',
+    args: [parseInt(5)],
+    enabled: true,
+  })
+
+  const { data, write } = useContractWrite(config)
+
+  function handleClick() {
+    // TODO: Receive the collection address (collection) and request to X endpoint to receive back the attributes (array of strings)
+    // This array is then passed onto the transaction arguments using the const config above. Now, how can we pass the received
+    // data to that usePrepareContractWrite object?
+    shouldFetch = true;
+    console.log(coefficients, intercept, collection, name, attributes)
+    shouldFetch = false;
+
+    write?.()
+  }
+
+  return (
+    <>
+      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+      <label htmlFor="my-modal-3" className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
+          <h3 className="text-lg font-bold">Create a new index</h3>
+          <p className="py-4">Description!</p>
+
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleClick()
+            }}>
+
+            <div className="form-control w-full max-w-xs">
+              <label className="label">
+                <span className="label-text">Insert the initial coefficients:</span>
+              </label>
+              {coefficientsInput}
+
+              <label className="label">
+                <span className="label-text">Insert the initial intercept:</span>
+              </label>
+              {interceptInput}
+
+              <label className="label">
+                <span className="label-text">Insert the collection address:</span>
+              </label>
+              {collectionInput}
+
+              <label className="label">
+                <span className="label-text">Insert the index name:</span>
+              </label>
+              {nameInput}
+
+              <button className="btn btn-wide">Create</button>
+            </div>
+          </form>
+
+        </label>
+      </label>
+    </>
+  )
+}
 
 export function Content() {
   return (
@@ -188,6 +300,8 @@ export function Content() {
           ))}
         </tbody>
       </table>
+      
+      <CreateIndex />
     </div>
   )
 }
