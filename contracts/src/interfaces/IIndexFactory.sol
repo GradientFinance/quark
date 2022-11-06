@@ -14,6 +14,8 @@ interface IIndexFactory {
             address,
             address,
             address,
-            string memory
+            string memory,
+            uint256,
+            bool
         );
 }

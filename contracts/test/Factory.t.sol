@@ -16,18 +16,6 @@ contract BaseSetup is Test {
     address[] internal collaterals; 
     address payable[] internal users;
 
-    address[] public denominations =  [
-        // WETH
-        0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6, 
-        // USDC
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F,
-        // APECOIN
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F,
-        // ibAlluoUSD
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F];
-
-    address public immutable uma = 0xA5B9d8a0B0Fa04Ba71BDD68069661ED5C0848884;
-
     IndexFactory public indexfactory;
 
     function setUp() public virtual {
@@ -41,7 +29,7 @@ contract BaseSetup is Test {
         vm.label(creator, "Index Creator");
 
         vm.prank(deployer);
-        indexfactory = new IndexFactory(denominations, uma);
+        indexfactory = new IndexFactory();
     }
 }
 
@@ -53,6 +41,8 @@ contract TestFactory is BaseSetup {
     address collection = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address denomination = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
     string name = 'BAYC Index'; 
+    uint256 manipulation = 10;
+    bool opensource = true;
 
     function setUp() public virtual override {
         BaseSetup.setUp();
@@ -65,14 +55,16 @@ contract TestFactory is BaseSetup {
 
         vm.prank(creator);
 
-        address index = indexfactory.createIndex(
+        indexfactory.createIndex(
             coefficients,
             intercept,
             accuracy,
             attributes,
             collection,
             denomination,
-            name
+            name,
+            manipulation,
+            opensource
         );
     }
 }
