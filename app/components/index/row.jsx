@@ -29,6 +29,7 @@ export function Row({ index }) {
   return (
     <tr>
       <td>
+        <a href={'/positions/' + index._index}>
         <div className="flex items-center space-x-3">
           <div className="avatar online placeholder">
             <div className="bg-neutral-focus text-neutral-content rounded-full w-12">
@@ -47,6 +48,7 @@ export function Row({ index }) {
             </a>
           </div>
         </div>
+        </a>
       </td>
       <td>{utils.formatEther(index._price)} ETH</td>
       <td>{ index._volume.toNumber()}</td>

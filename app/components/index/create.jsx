@@ -5,17 +5,21 @@ import {
   useWaitForTransaction,
 } from 'wagmi'
 import { factoryABI } from '../../abi/factory'
+import {
+  BigNumber
+} from 'ethers'
+
 
 
 export function CreateModal({ factoryAddress, contractReader }) {
-  const [name, setName] = useState('');
-  const [collection, setCollection] = useState('0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D');
+  const [name, setName] = useState('Milady Index');
+  const [collection, setCollection] = useState('0x5Af0D9827E0c53E4799BB226655A1de152A425a5');
   const [denomination, setDenomination] = useState('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6');
 
-  const [coefficients, setCoefficients] = useState([-44, -63, 77, -28, 90]);
-  const [intercept, setIntercept] = useState(242242);
+  const [coefficients, setCoefficients] = useState([50, -63, 77, -28, 90]);
+  const [intercept, setIntercept] = useState(485771907900406020);
   const [accuracy, setAccuracy] = useState(85);
-  const [attributes, setAttributes] = useState(['Aquamarine', 'Prom Dress', 'Crazy', 'Black', 'Bored']);
+  const [attributes, setAttributes] = useState(['Sunrise', 'Prep-hypebeast', 'C-drip', '26', 'Green']);
   const [manipulationScore, setManipulationScore] = useState(0);
   const [openSource, setOpenSource] = useState(true);
 
@@ -81,7 +85,7 @@ export function CreateModal({ factoryAddress, contractReader }) {
       "type": "function"
     }],
     functionName: 'createIndex',
-    args: [coefficients, intercept, accuracy, attributes, collection, denomination, name, manipulationScore, openSource],
+    args: [coefficients, BigNumber.from(intercept.toString()), accuracy, attributes, collection, denomination, name, manipulationScore, openSource],
   })
 
   const { data, write } = useContractWrite(config)
@@ -95,13 +99,13 @@ export function CreateModal({ factoryAddress, contractReader }) {
       <input type="checkbox" id="my-modal-3" className="modal-toggle" />
       <label htmlFor="my-modal-3" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">Congratulations random Internet user!</h3>
-          <p className="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
+          <h3 className="text-lg font-bold">Create Price Feed</h3>
+          <p className="py-4">You've can now define the characteristics of your pricing algorithm.</p>
           <ul className="steps">
-            <li className="step step-primary">Register</li>
-            <li className="step step-primary">Choose plan</li>
-            <li className="step">Purchase</li>
-            <li className="step">Receive Product</li>
+            <li className="step step-primary">Train</li>
+            <li className="step step-primary">Post on-chain</li>
+            <li className="step">Trade</li>
+            <li className="step">Settle trustlessly</li>
           </ul>
           <form
             onSubmit={(e) => {
