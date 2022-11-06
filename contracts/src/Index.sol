@@ -67,7 +67,7 @@ contract Index {
     /**
     * @dev Returns the current index price.
     **/
-    function getPrice() external pure returns (int256) {
+    function getPrice() public pure returns (int256) {
         // returns 10 eth
         return 10000000000000000000;
     }
@@ -128,17 +128,16 @@ contract Index {
     /**
     * @dev Function that returns index data and stats, used by the front-end.
     **/
-    function getData() external view returns (address, int256[] memory, int256, uint8, string[] memory, address, address, address, string memory) {
+    function getData() external view returns (string memory, int256, uint256, uint256, uint8, uint256, bool) {
         return(
-            exchange, 
-            coefficients, 
-            intercept, 
+            name,
+            getPrice(),
+            volume, 
+            volatility, 
             accuracy, 
-            attributes, 
-            collection, 
-            uma, 
-            denomination, 
-            name);
+            manipulation, 
+            opensource
+        );
     }
 
     /*//////////////////////////////////////////////////////////////
