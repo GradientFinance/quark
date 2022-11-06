@@ -3,14 +3,16 @@ pragma solidity ^0.8.15;
 
 import {DeployBase} from "./DeployBase.s.sol";
 
-contract DeployPolygon is DeployBase {
+contract DeployGoerli is DeployBase {
     address[] public denominations =  [
         // WETH
-        0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619, 
+        0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6, 
         // USDC
-        0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174,
-        // IbAlluoUSD
-        0xC2DbaAEA2EfA47EBda3E572aa0e55B742E408BF6
+        0x07865c6E87B9F70255377e024ace6630C1Eaa37F,
+        // APECOIN
+        0x4d224452801ACEd8B2F0aebE155379bb5D594381,
+        // IbAlluoUSD 
+        0xF555B595D04ee62f0EA9D0e72001D926a736A0f6
     ];
 
     address public immutable uma = 0xA5B9d8a0B0Fa04Ba71BDD68069661ED5C0848884;

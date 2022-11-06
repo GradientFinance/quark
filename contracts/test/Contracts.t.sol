@@ -111,7 +111,6 @@ contract TestFactory is BaseSetup {
     }
 }
 
-
 contract TestExchange is BaseSetup {
     // Index Parameters
     int256[] coefficients = [int256(50), -63, 77, -28, 90];

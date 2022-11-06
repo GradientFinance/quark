@@ -8,11 +8,9 @@ contract DeployGoerli is DeployBase {
         // WETH
         0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6, 
         // USDC
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F,
-        // APECOIN
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F,
-        // ibAlluoUSD
-        0x07865c6E87B9F70255377e024ace6630C1Eaa37F];
+        0x07865c6E87B9F70255377e024ace6630C1Eaa37F
+        // APECOIN & IbAlluoUSD not found on Goerli testnet
+    ];
 
     address public immutable uma = 0xA5B9d8a0B0Fa04Ba71BDD68069661ED5C0848884;
 
