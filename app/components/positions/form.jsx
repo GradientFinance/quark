@@ -185,7 +185,7 @@ export function Put({ index, setCallActive }) {
                   className="input input-bordered w-full"
                   value={expirationDays}
                 />
-                <span>days</span>
+                <span>seconds</span>
               </label>
             </div>
             <div className="form-control">
@@ -220,7 +220,7 @@ export function Put({ index, setCallActive }) {
                 <dt className="flex items-center text-sm text-base-600">
                   <span>Expiration</span>
                 </dt>
-                <dd className="text-sm font-medium text-base-900">In {expirationDays} days</dd>
+                <dd className="text-sm font-medium text-base-900">In {expirationDays} seconds</dd>
               </div>
               <div className="flex items-center justify-between border-t border-base-200 pt-2">
                 <dt className="flex text-sm text-base-600">
@@ -267,7 +267,7 @@ export function Call({ index, setPutActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0x3b729c910aca393061878bdf9aa6510c2629d376',
+    address: '0xcbB45f7A705238dC7BbC1eae5fD238FF2507cE9B',
     abi: [
       {
         "inputs": [
@@ -411,7 +411,7 @@ export function Call({ index, setPutActive }) {
                   className="input input-bordered w-full"
                   value={expirationDays}
                 />
-                <span>days</span>
+                <span>seconds</span>
               </label>
             </div>
             <div className="form-control">
@@ -446,7 +446,7 @@ export function Call({ index, setPutActive }) {
                 <dt className="flex items-center text-sm text-base-600">
                   <span>Expiration</span>
                 </dt>
-                <dd className="text-sm font-medium text-base-900">In {expirationDays} days</dd>
+                <dd className="text-sm font-medium text-base-900">In {expirationDays} seconds</dd>
               </div>
               <div className="flex items-center justify-between border-t border-base-200 pt-2">
                 <dt className="flex text-sm text-base-600">

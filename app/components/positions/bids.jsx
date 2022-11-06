@@ -72,7 +72,7 @@ export function MakeBid({ exchangeAddress }) {
       },
     ],
     functionName: 'createOffer',
-    args: [3, BigNumber.from("10")],
+    args: [2, BigNumber.from("10").pow(18)],
   })
 
   const { data, write } = useContractWrite(config);
@@ -105,7 +105,7 @@ export function MakeBid({ exchangeAddress }) {
 }
 
 export function Bids() {
-  let exchangeAddress = '0x3b729c910aca393061878bdf9aa6510c2629d376';
+  let exchangeAddress = '0xcbB45f7A705238dC7BbC1eae5fD238FF2507cE9B';
 
   return (
     <>

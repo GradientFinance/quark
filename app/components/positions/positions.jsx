@@ -1,5 +1,6 @@
 import { useEffect, useState, React } from 'react'
 import { usePrepareContractWrite, useContractWrite, useContractRead } from 'wagmi'
+import { utils } from 'ethers'
 
 
 export function ContractReader({ positions, setPositions, exchangeAddress }) {
@@ -165,6 +166,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
             <th className="text-center">Strike</th>
             <th className="text-center">Expiration</th>
             <th className="text-center">Leverage</th>
+            <th className="text-center">Premium</th>
             <th></th>
             <th></th>
           </tr>
@@ -201,6 +203,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
                     </btn>
                   </div>}
               </td>
+              <td className="text-center">{ utils.formatEther( position._premium ) } ETH</td>
             </tr>
           ))}
         </tbody>
@@ -222,7 +225,7 @@ export function NoActivePositions() {
 }
 
 export function Positions() {
-  let exchangeAddress = '0x3b729c910aca393061878bdf9aa6510c2629d376';
+  let exchangeAddress = '0xcbB45f7A705238dC7BbC1eae5fD238FF2507cE9B';
 
   let [positions, setPositions] = useState([]);
 

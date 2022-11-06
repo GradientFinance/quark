@@ -11,7 +11,7 @@ import {
 
 
 
-export function CreateModal({ factoryAddress, contractReader }) {
+export function CreateModal({ factoryAddress }) {
   const [name, setName] = useState('Milady Index');
   const [collection, setCollection] = useState('0x5Af0D9827E0c53E4799BB226655A1de152A425a5');
   const [denomination, setDenomination] = useState('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6');
@@ -100,7 +100,7 @@ export function CreateModal({ factoryAddress, contractReader }) {
       <label htmlFor="my-modal-3" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <h3 className="text-lg font-bold">Create Price Feed</h3>
-          <p className="py-4">You've can now define the characteristics of your pricing algorithm.</p>
+          <p className="py-4">You can now create your pricing algorithm.</p>
           <ul className="steps">
             <li className="step step-primary">Train</li>
             <li className="step step-primary">Post on-chain</li>
@@ -161,7 +161,6 @@ export function CreateModal({ factoryAddress, contractReader }) {
                 </div>
               }
             </button>
-            {isSuccess ? <contractReader /> : ''}
           </form>
         </label>
       </label>

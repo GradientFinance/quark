@@ -1,19 +1,13 @@
 import { useEffect, useState, React } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
-import { useContractRead } from 'wagmi'
+import { useContractRead, useContractReads } from 'wagmi'
 import { ModelStats } from 'components/positions/model_stats'
 import { CreateModal } from 'components/index/create'
 import { Row } from 'components/index/row'
 
-export function ContractReader({ indices, setIndices, factoryAddress }) {
-  if (indices.length != 0) {
-    return;
-  }
-
-  let indxs = [];
-
-  const factoryRead = useContractRead({
+const calc = (factoryAddress) => {
+  const { data, isSuccess } = useContractRead({
     address: factoryAddress,
     abi: [{
       "inputs": [],
@@ -31,84 +25,91 @@ export function ContractReader({ indices, setIndices, factoryAddress }) {
     functionName: 'getIndices',
   });
 
+  let contracts = [];
 
-  if (factoryRead["isError"] || !factoryRead["data"] || factoryRead["data"].length == 0) {
-    return;
+  if (isSuccess) {
+    for (let i = 0; i < data.length; i++) {
+      const point = {
+        address: data[i],
+        abi: [{
+          "inputs": [],
+          "name": "getData",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "_accuracy",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "_collection",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_denomination",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "_name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_manipulation",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_opensource",
+              "type": "bool"
+            },
+            {
+              "internalType": "int256",
+              "name": "_price",
+              "type": "int256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_volume",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_count",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "_index",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }],
+        functionName: 'getData',
+      }
+      contracts.push(point)
+    }
   }
 
-  console.log(factoryRead["data"]);
+  const read = useContractReads({
+    contracts: contracts
+  })
 
-  for (let i = 0; i < factoryRead["data"].length; i++) {
-    const { data } = useContractRead({
-      address: factoryRead["data"][i],
-      abi: [{
-        "inputs": [],
-        "name": "getData",
-        "outputs": [
-          {
-            "internalType": "uint8",
-            "name": "_accuracy",
-            "type": "uint8"
-          },
-          {
-            "internalType": "address",
-            "name": "_collection",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "_denomination",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_manipulation",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "_opensource",
-            "type": "bool"
-          },
-          {
-            "internalType": "int256",
-            "name": "_price",
-            "type": "int256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_volume",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_count",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_index",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }],
-      functionName: 'getData',
-    });
-    indxs.push(data);
-  }
-
-  setIndices(indxs);
+  return read;
 }
 
+export function Content({ factoryAddress }) {
+  let indices = []
 
-export function Content({ indices, setIndices, factoryAddress }) {
+  const data = calc(factoryAddress);
+  if (data["isSuccess"]) {
+    indices = data["data"];
+  }
+
   return (
     <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300 mb-6">
       <div className="hero my-10">
@@ -186,16 +187,13 @@ export function Content({ indices, setIndices, factoryAddress }) {
         </tbody>
       </table>
       <ModelStats />
-      <ContractReader indices={indices} setIndices={setIndices} factoryAddress={factoryAddress} />
-      <CreateModal factoryAddress={factoryAddress} contractReader={ContractReader} />
+      <CreateModal factoryAddress={factoryAddress} />
     </div>
   )
 }
 
 export default function App() {
-  let factoryAddress = '0xa3dd7927a44404ce2b15a559a274ec9fa7bb5f31';
-
-  let [indices, setIndices] = useState([]);
+  let factoryAddress = '0x96F4c2b61F23324A3C29DDF47b898F02eaCA3839';
 
   useEffect(() => {
     document.title = "Indices";
@@ -206,7 +204,7 @@ export default function App() {
   return (
     <Page>
       <Navbar />
-      <Content indices={indices} setIndices={setIndices} factoryAddress={factoryAddress} />
+      <Content factoryAddress={factoryAddress} />
     </Page>
   );
 };

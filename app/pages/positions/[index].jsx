@@ -27,9 +27,6 @@ export function Content({ indexAddress, index }) {
           <div className="col-span-2">
             <Positions />
           </div>
-          <div className="col-span-1">
-            <Orders />
-          </div>
         </div>
       </div>
       <Bids />
