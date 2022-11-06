@@ -150,7 +150,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
 
   const { data, write } = useContractWrite(config);
 
-  console.log(positions[2]);
+  console.log(positions[0]);
 
   return (
     <div className="overflow-x-auto max-h-min">
@@ -158,25 +158,24 @@ export function ActivePositions({ positions, exchangeAddress }) {
         <thead>
           <tr>
             <th>Id</th>
-            <th className="text-center">Type</th>
-            <th className="text-center">PnL</th>
-            <th className="text-center">Strike</th>
-            <th className="text-center">Expiration</th>
-            <th className="text-center">Leverage</th>
-            <th className="text-center">Premium</th>
-            <th></th>
-            <th></th>
+            <th>Type</th>
+            <th>Strike</th>
+            <th>Expiration</th>
+            <th >Leverage</th>
+            <th>Premium</th>
+            <th><span></span></th>
+            <th><span></span></th>
           </tr>
         </thead>
         <tbody>
           {positions.map((position, index) => (
             <tr>
               <td>{position._id.toNumber()}</td>
-              <td className="text-center">{position._type ? 'Put' : 'Call'}</td>
-              <td className="text-center"></td>
-              <td className="text-center"> ETH</td>
-              <td className="text-center">In {position._expiry.toNumber()} days</td>
-              <td className="text-center">1x</td>
+              <td >{position._type ? 'Put' : 'Call'}</td>
+              <td >{ position._strike.toNumber()} ETH</td>
+              <td >{ position._expiry.toNumber() - Math.floor(Date.now() / 1000) <= 0 ? 'Expired' : ('In ' + position._expiry.toNumber() - Math.floor(Date.now() / 1000) + "s")} </td>
+              <td>1x</td>
+              <td>{ position._timestamp.toNumber() == 0 ? 'Pending' : position._premium.toNumber()}</td>
               <td>
                 {position._timestamp.toNumber() != 0 ?
                   <div>
@@ -200,7 +199,6 @@ export function ActivePositions({ positions, exchangeAddress }) {
                     </btn>
                   </div>}
               </td>
-              <td className="text-center">{utils.formatEther(position._premium)} ETH</td>
             </tr>
           ))}
         </tbody>
@@ -229,7 +227,6 @@ export function Positions() {
   const data = calc(exchangeAddress);
   if (data["isSuccess"]) {
     positions = data["data"];
-    console.log(positions);
   }
 
   return (

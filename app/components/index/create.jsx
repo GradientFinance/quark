@@ -6,7 +6,7 @@ import {
 } from 'wagmi'
 import { factoryABI } from '../../abi/factory'
 import {
-  BigNumber
+  utils
 } from 'ethers'
 
 
@@ -85,7 +85,7 @@ export function CreateModal({ factoryAddress }) {
       "type": "function"
     }],
     functionName: 'createIndex',
-    args: [coefficients, BigNumber.from(intercept.toString()), accuracy, attributes, collection, denomination, name, manipulationScore, openSource],
+    args: [coefficients, intercept, accuracy, attributes, collection, denomination, name, manipulationScore, openSource],
   })
 
   const { data, write } = useContractWrite(config)

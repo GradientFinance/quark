@@ -1,6 +1,6 @@
 import { usePrepareContractWrite, useContractWrite } from 'wagmi'
 import {
-  BigNumber
+  utils
 } from 'ethers'
 
 
@@ -72,7 +72,7 @@ export function MakeBid({ exchangeAddress }) {
       },
     ],
     functionName: 'createOffer',
-    args: [2, BigNumber.from("10").pow(18)],
+    args: [2, utils.parseUnits("10", "ether")],
   })
 
   const { data, write } = useContractWrite(config);

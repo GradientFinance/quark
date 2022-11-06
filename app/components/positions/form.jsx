@@ -5,7 +5,7 @@ import {
   useWaitForTransaction,
 } from 'wagmi'
 import {
-  BigNumber
+  utils,
 } from 'ethers'
 
 function useDebounce(value, delay) {
@@ -129,7 +129,7 @@ export function Put({ index, setCallActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 100)],
+    args: [index, true, utils.parseUnits(debouncedStrike.toString(), "ether"), parseInt(Math.floor(Date.now() / 1000) + 100)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
@@ -355,7 +355,7 @@ export function Call({ index, setPutActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, false, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 100)],
+    args: [index, false, utils.parseUnits(debouncedStrike.toString(), "ether"), parseInt(Math.floor(Date.now() / 1000) + 100)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 

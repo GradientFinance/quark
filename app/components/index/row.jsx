@@ -50,7 +50,7 @@ export function Row({ index }) {
         </div>
         </a>
       </td>
-      <td>{utils.formatEther(index._price)} ETH</td>
+      <td>{ utils.parseUnits(index._price.toString(), "ether")} ETH</td>
       <td>{ index._volume.toNumber()} ({ index._count.toNumber()}) </td>
       <td>
         <div className="flex items-center">
