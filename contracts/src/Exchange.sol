@@ -136,9 +136,9 @@ contract Exchange is ERC721, ReentrancyGuard {
         address _denomination = index.getDenomination();
 
         // This allowance is a filter to prevent spamming the front-end
-        // _IERC20 collateral = _IERC20(_denomination);
-        // uint256 allowance = collateral.allowance(msg.sender, address(this));
-        // require(allowance == uint256(2**256-1), "Allowance must be equal to the maximum spending possible (to pay any premium after acepting)");
+        _IERC20 collateral = _IERC20(_denomination);
+        uint256 allowance = collateral.allowance(msg.sender, address(this));
+        require(allowance == uint256(2**256-1), "Allowance must be equal to the maximum spending possible (to pay any premium after acepting)");
 
         optionId++;
 

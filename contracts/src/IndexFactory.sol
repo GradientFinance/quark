@@ -22,19 +22,18 @@ contract IndexFactory is ReentrancyGuard {
         bool _opensource,
         address index
     );
+    
+    /*//////////////////////////////////////////////////////////////
+                         MISCELLANEOUS CONSTANTS
+    //////////////////////////////////////////////////////////////*/
+
+    address public immutable uma;
+
+    address public immutable exchange;
 
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
     //////////////////////////////////////////////////////////////*/
-
-    // Store all the created indices.
-    mapping(string => address) public getIndex;
-    mapping(address => bool) public isIndex;
-    mapping(address => bool) public valid_denomination;
-
-    address public immutable uma; 
-    address public immutable exchange;
-    address[] public indices;
 
     struct Parameters {
         address _exchange;
@@ -52,28 +51,49 @@ contract IndexFactory is ReentrancyGuard {
 
     Parameters public _parameters;
 
+    mapping(string => address) public getIndex;
+
+    mapping(address => bool) public isIndex;
+
+    mapping(address => bool) public valid_denomination;
+
+    address[] public indices;
+
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {
-        // WETH (goerli)
-        valid_denomination[0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6] = true;
-        // USDC (goerli)
-        valid_denomination[0x07865c6E87B9F70255377e024ace6630C1Eaa37F] = true;
-        // WETH (foundry)
-        valid_denomination[0xa2F9062527F5588fcfD767b218Ce33210574F3A7] = true;
+    /**
+    * @notice Assigns the alloved denominations, UMA oracle, and Exchange address.
+    * @param _denominations Array of valid denomination addresses.
+    * @param _uma Address of UMA oracle.
+    * @param _exchange Address of Exchange.
+    **/
+    constructor(address[] memory _denominations, address _uma, address _exchange) {
+        for (uint i = 0; i < _denominations.length; i++) {
+            valid_denomination[_denominations[i]] = true;
+        }
 
-        // TODO: Add the exchange contract
-        exchange = address(0);
-
-        uma = 0xA5B9d8a0B0Fa04Ba71BDD68069661ED5C0848884;
+        uma = _uma;
+        exchange = _exchange;
     }
 
     /*//////////////////////////////////////////////////////////////
                             EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
+    /**
+    * @notice Creates a custom price index.
+    * @param _coefficients Coefficients of trained linear model.
+    * @param _intercept Intercept of trained linear model.
+    * @param _accuracy Reported r^2 accuracy of trained linear model.
+    * @param _attributes Targetted attributes of given NFT collection.
+    * @param _collection Address of NFT collecion.
+    * @param _denomination Denomination token collateral for index.
+    * @param _name Name of index.
+    * @param _manipulation Manipulation score of index.
+    * @param _opensource True if open source, false if not.
+    **/
     function createIndex(
         int256[] memory _coefficients,
         int256 _intercept,
@@ -97,6 +117,9 @@ contract IndexFactory is ReentrancyGuard {
         emit IndexCreated(_coefficients, _intercept, _accuracy, _attributes, _collection, _denomination, _name, _manipulation, _opensource, index);
     }
 
+    /**
+    * @notice Returns the parameters to the newly created index.
+    **/
     function getParameters() external view returns (
         address,
         int256[] memory,
@@ -113,10 +136,16 @@ contract IndexFactory is ReentrancyGuard {
         return (_parameters._exchange, _parameters._coefficients, _parameters._intercept, _parameters._accuracy, _parameters._attributes, _parameters._collection, _parameters._uma, _parameters._denomination, _parameters._name, _parameters._manipulation, _parameters._opensource);
     }
 
+    /**
+    * @notice Verifies that a given address is a valid index created by the factory.
+    **/
     function isValid(address index) external view returns (bool) {
         return isIndex[index];
     }
 
+    /**
+    * @notice Returns all the indices created by the factory.
+    **/
     function getIndices() external view returns (address[] memory) {
         return indices;
     }
@@ -125,6 +154,19 @@ contract IndexFactory is ReentrancyGuard {
                             INTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
+    /**
+    * @notice Deploys a price index with the given parameters.
+    * @param _exchange Address of Exchange.
+    * @param _coefficients Coefficients of trained linear model.
+    * @param _intercept Intercept of trained linear model.
+    * @param _accuracy Reported r^2 accuracy of trained linear model.
+    * @param _attributes Targetted attributes of given NFT collection.
+    * @param _collection Address of NFT collecion.
+    * @param _denomination Denomination token collateral for index.
+    * @param _name Name of index.
+    * @param _manipulation Manipulation score of index.
+    * @param _opensource True if open source, false if not.
+    **/
     function deploy(
         address _exchange,
         int256[] memory _coefficients,
@@ -143,5 +185,4 @@ contract IndexFactory is ReentrancyGuard {
         
         delete _parameters;
     }
-
 }

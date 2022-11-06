@@ -29,7 +29,7 @@ contract Index {
     bool public opensource;
     
     uint256 public volume;
-    uint256 public volatility;
+    uint256 public count;
     int256[] public index;
 
     /*//////////////////////////////////////////////////////////////
@@ -78,6 +78,7 @@ contract Index {
     function addVolume(uint256 _amount) external {
         // require(msg.sender == exchange);
         volume = volume + _amount;
+        count++;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -112,8 +113,6 @@ contract Index {
         return oracle.getRequest(address(this), identifier, requestTime, ancillaryData).resolvedPrice;
     }
 
-    // TODO: When re calculating with the new sale, calculate volatility
-
     /*//////////////////////////////////////////////////////////////
                                 HELPERS
     //////////////////////////////////////////////////////////////*/
@@ -128,17 +127,21 @@ contract Index {
     /**
     * @dev Function that returns index data and stats, used by the front-end.
     **/
-    function getData() external view returns (string memory, int256, uint256, uint256, uint8, uint256, bool, address, address) {
+    function getData() external view returns (uint8 _accuracy, address _collection, address _denomination, string memory _name, uint256 _manipulation, bool _opensource, int256 _price, uint256 _volume, uint256 _count, address _index) {
         return(
+            // CreateIndex values
+            accuracy,
+            collection, 
+            denomination, 
             name,
-            getPrice(),
-            volume, 
-            volatility, 
-            accuracy, 
-            manipulation, 
+            manipulation,
             opensource,
-            address(this),
-            denomination
+
+            // Index values
+            getPrice(),
+            volume,
+            count,
+            address(this)
         );
     }
 
