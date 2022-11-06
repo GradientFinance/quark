@@ -4,200 +4,105 @@ import { Navbar } from 'components/ui/navbar'
 import {
   usePrepareContractWrite,
   useContractWrite,
-  useWaitForTransaction,
+  useContractRead,
 } from 'wagmi'
 import useSWR from "swr";
 import { ModelStats } from 'components/derivative/model_stats'
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
-
-const indices = [
-  {
-    imgUrl: 'https://img.seadn.io/files/64d1de418e4d78c6f03df91ce47cf311.png?fit=max&w=1000',
-    name: 'Hedonic Index',
-    price: 28.04,
-    tracking: 'All BAYC',
-    volume: '2817 ETH',
-    volatility: 42.5,
-    accuracy: '98% R^2 (20% MEA)',
-    manipulationRisk: 0.7,
-    openSource: true,
-  },
-]
-
-function useInput({ id, placeholder }) {
-  const [value, setValue] = useState("");
-  const input = <input value={value} onChange={e => setValue(e.target.value)} type="text" id={id} placeholder={placeholder} className="input input-bordered w-full max-w-xs" />;
-  return [value, input];
-}
-
-function fetchAttributes() {
-  const [shouldFetch, setShouldFetch] = React.useState(false);
-  const { data } = useSWR(shouldFetch ? null : "/api/users/1", fetcher);
-  function handleClick() {
-    setShouldFetch(true);
-  }
-  return (
-    <>
-      <button disable={shouldFetch} onClick={handleClick}>Fetch</button>
-      {data ? <h1>{data.fullName}</h1> : null}
-    </>
-  );
-}
-
-export function CreateIndex() {
-  const [coefficients, coefficientsInput] = useInput({ placeholder: "[-3317591, -20283840, -2194464]", id: "coefficients" });
-  const [intercept, interceptInput] = useInput({ placeholder: "14451278152419082240", id: "intercept" });
-  const [collection, collectionInput] = useInput({ placeholder: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d", id: "collection" });
-  const [name, nameInput] = useInput({ placeholder: "BAYC Hedonic Regression", id: "coefficients" });
-  let shouldFetch = false
-
-  let { attributes, error } = useSWR(shouldFetch ? null :
-    "//api.gradient.city/dashboard/nftfi/distributions/?address=0x741cB6A6a8dC16363666462769D8dEc996311466",
-    fetcher
-  );
-
-  const { config } = usePrepareContractWrite({
-    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
-    abi: [
-      {
-        name: 'mint',
-        type: 'function',
-        stateMutability: 'nonpayable',
-        inputs: [{ internalType: 'uint32', name: 'tokenId', type: 'uint32' }],
-        outputs: [],
-      },
-    ],
-    functionName: 'mint',
-    args: [parseInt(5)],
-    enabled: true,
-  })
-
-  const { data, write } = useContractWrite(config)
-
-  function handleClick() {
-    // TODO: Receive the collection address (collection) and request to X endpoint to receive back the attributes (array of strings)
-    // This array is then passed onto the transaction arguments using the const config above. Now, how can we pass the received
-    // data to that usePrepareContractWrite object?
-    shouldFetch = true;
-    console.log(coefficients, intercept, collection, name, attributes)
-    shouldFetch = false;
-
-    write?.()
-  }
-
-  return (
-    <>
-      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <label htmlFor="my-modal-3" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">Create a new index</h3>
-          <p className="py-4">Description!</p>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleClick()
-            }}>
-
-            <div className="form-control w-full max-w-xs">
-              <label className="label">
-                <span className="label-text">Insert the initial coefficients:</span>
-              </label>
-              {coefficientsInput}
-
-              <label className="label">
-                <span className="label-text">Insert the initial intercept:</span>
-              </label>
-              {interceptInput}
-
-              <label className="label">
-                <span className="label-text">Insert the collection address:</span>
-              </label>
-              {collectionInput}
-
-              <label className="label">
-                <span className="label-text">Insert the index name:</span>
-              </label>
-              {nameInput}
-
-              <button className="btn btn-wide">Create</button>
-            </div>
-          </form>
-
-        </label>
-      </label>
-    </>
-  )
-}
-
-export function CreateModal() {
-
-  return (
-    <>
-      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <label htmlFor="my-modal-3" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">Congratulations random Internet user!</h3>
-          <p className="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
-          <ul className="steps">
-            <li className="step step-primary">Register</li>
-            <li className="step step-primary">Choose plan</li>
-            <li className="step">Purchase</li>
-            <li className="step">Receive Product</li>
-          </ul>
-
-          <div className="form-control mb-2">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input type="text" placeholder="0.01" className="input input-bordered" />
-          </div>
-          <div className="form-control mb-2">
-            <label className="label">
-              <span className="label-text">Collection address</span>
-            </label>
-            <input type="text" placeholder="0.01" className="input input-bordered" />
-          </div>
-          <div className="form-control mb-2">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input type="text" placeholder="0.01" className="input input-bordered" />
-          </div>
-          <div className="form-control mb-5">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input type="file" className="file-input file-input-bordered w-full" />
-          </div>
-          <div className="form-control mb-2">
-            <select className="select select-bordered w-full">
-              <option disabled selected>Pick your favorite Simpson</option>
-              <option>Homer</option>
-              <option>Marge</option>
-              <option>Bart</option>
-              <option>Lisa</option>
-              <option>Maggie</option>
-            </select>
-          </div>
-          <button className="btn btn-block space-x-2 mt-3">
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
-              </svg>
-              Buy Put
-            </div>
-          </button>
-        </label>
-      </label>
-    </>
-  );
-
-}
-
+import { CreateModal } from 'components/derivative/create_index'
 
 export function Content() {
+  let indxs = [];
+  let [indices, setIndices] = useState([]);
+
+  const factoryRead = useContractRead({
+    address: '0xc220324bef6a5ccdc181d772c14d859be40b870b',
+    abi: [
+      {
+        "inputs": [],
+        "name": "getIndeces",
+        "outputs": [
+          {
+            "internalType": "address[]",
+            "name": "",
+            "type": "address[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    ],
+    functionName: 'getIndeces',
+  });
+
+  useEffect(() => {
+    setIndices(indxs);
+  }, [indxs]);
+
+  if (factoryRead["isSuccess"]) {
+    for (let i = 0; i < factoryRead["data"].length; i++) {
+      const { data } = useContractRead({
+        address: factoryRead["data"][i],
+        abi: [
+          {
+            "inputs": [],
+            "name": "getData",
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              },
+              {
+                "internalType": "int256[]",
+                "name": "",
+                "type": "int256[]"
+              },
+              {
+                "internalType": "int256",
+                "name": "",
+                "type": "int256"
+              },
+              {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+              },
+              {
+                "internalType": "string[]",
+                "name": "",
+                "type": "string[]"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+        ],
+        functionName: 'getData',ƒ
+      });
+      indxs.push(data);
+    }
+  };
+
   return (
     <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
       <div className="hero my-10">
@@ -285,8 +190,8 @@ export function Content() {
           </tr>
         </thead>
         <tbody>
-          {indices.map((index) => (
-            <tr key={index.id}>
+          {indices.map((index, i) => (
+            <tr key={i}>
               <td>
                 <div className="flex items-center space-x-3">
                   <div className="avatar online placeholder">
@@ -295,7 +200,7 @@ export function Content() {
                     </div>
                   </div>
                   <div>
-                    <div className="font-bold">Hedonic Price Index</div>
+                    <div className="font-bold">{index[8]}</div>
                     <a href='#'>
                       <span className="badge badge-ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2">
@@ -307,7 +212,7 @@ export function Content() {
                   </div>
                 </div>
               </td>
-              <td>{index.price} ETH</td>
+              <td>{index[8]} ETH</td>
               <td>{index.volume}</td>
               <td>
                 <a href='#'>

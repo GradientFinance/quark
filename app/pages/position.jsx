@@ -1,4 +1,4 @@
-import { useEffect, React } from 'react'
+import { useEffect, React, useState } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
 import { Form } from "components/derivative/form";
@@ -9,7 +9,7 @@ import { Bids } from "components/derivative/bids";
 import { Chart } from "components/derivative/chart";
 import dynamic from "next/dynamic";
 
-export function Content() {
+export function Content({ indexAddress }) {
   return (
     <>
       <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
@@ -21,7 +21,7 @@ export function Content() {
             <Chart />
           </div>
           <div className="col-span-1 h-full">
-            <Form index={"placeholder"} />
+            <Form indexAddress={indexAddress} index={"placeholder"} />
           </div>
           <div className="col-span-2">
             <Positions />
@@ -37,6 +37,8 @@ export function Content() {
 }
 
 export default function App() {
+  const [indexAddress, setIndexAddress] = useState("");
+
   useEffect(() => {
     document.title = "Indices";
     document.documentElement.setAttribute("data-theme", "cupcake");
@@ -46,7 +48,7 @@ export default function App() {
   return (
     <Page>
       <Navbar />
-      <Content />
+      <Content indexAddress={indexAddress} />
     </Page>
   );
 };

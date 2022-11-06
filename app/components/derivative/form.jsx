@@ -26,7 +26,7 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-export function Put({ setCallActive }) {
+export function Put({ indexAddress, setCallActive }) {
   const [strike, setStrike] = React.useState(15);
   const [expirationDays, setExpirationDays] = React.useState(30);
   const [leverage, setLeveraege] = React.useState(10);
@@ -41,36 +41,24 @@ export function Put({ setCallActive }) {
       {
         inputs: [
           {
-            components: [
-              {
-                internalType: "address",
-                name: "_index",
-                type: "address"
-              },
-              {
-                internalType: "bool",
-                name: "_type",
-                type: "bool"
-              },
-              {
-                internalType: "uint256",
-                name: "_strike",
-                type: "uint256"
-              },
-              {
-                internalType: "uint256",
-                name: "_expiry",
-                type: "uint256"
-              },
-              {
-                internalType: "address",
-                name: "_denomination",
-                type: "address"
-              }
-            ],
-            internalType: "struct Exchange.RequestInfo",
-            name: "_request",
-            type: "tuple"
+            internalType: "address",
+            name: "_index",
+            type: "address"
+          },
+          {
+            internalType: "bool",
+            name: "_type",
+            type: "bool"
+          },
+          {
+            internalType: "uint256",
+            name: "_strike",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "_expiry",
+            type: "uint256"
           }
         ],
         name: "requestOption",
@@ -138,7 +126,7 @@ export function Put({ setCallActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: ["0xfcfe28867ba312122d79a82ddd11fe7cf8b5a1f3", true, parseInt(debouncedStrike), parseInt(debouncedExpiration)],
+    args: ["0x98ae04cc2cea1226d3b8e029a1ee376a9e7e83c0", true, parseInt(debouncedStrike), parseInt(debouncedExpiration)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
@@ -268,7 +256,7 @@ export function Put({ setCallActive }) {
   )
 }
 
-export function Call({ setPutActive }) {
+export function Call({ indexAddress, setPutActive }) {
   const [strike, setStrike] = React.useState(15);
   const [expirationDays, setExpirationDays] = React.useState(30);
   const [leverage, setLeveraege] = React.useState(10);
@@ -435,7 +423,7 @@ export function Call({ setPutActive }) {
   )
 }
 
-export function Form() {
+export function Form({ indexAddress }) {
   const [putActive, setPut] = React.useState(false)
 
   const setPutActive = event => {
@@ -448,7 +436,7 @@ export function Form() {
 
   return (
     <>
-      {putActive ? <Put setCallActive={setCallActive} /> : <Call setPutActive={setPutActive} />}
+      {putActive ? <Put indexAddress={indexAddress} setCallActive={setCallActive} /> : <Call indexAddress={indexAddress} setPutActive={setPutActive} />}
     </>
   )
 }
