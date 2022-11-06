@@ -129,7 +129,7 @@ export function Put({ index, setCallActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, true, BigNumber.from(debouncedStrike.toString()), parseInt(1669814557)],
+    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 20)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
@@ -267,34 +267,97 @@ export function Call({ index, setPutActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0x5F9030998B9C8f7Bf82cFdb5036851B4187b434C',
+    address: '0x3b729c910aca393061878bdf9aa6510c2629d376',
     abi: [
       {
-        inputs: [
+        "inputs": [
           {
-            internalType: "uint256",
-            name: "_strike",
-            type: "uint256"
+            "internalType": "address",
+            "name": "_index",
+            "type": "address"
           },
           {
-            internalType: "uint256",
-            name: "_expiration",
-            type: "uint256"
+            "internalType": "bool",
+            "name": "_type",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "_leverage",
-            type: "uint256"
+            "internalType": "uint256",
+            "name": "_strike",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_expiry",
+            "type": "uint256"
           }
         ],
-        name: "Do",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function"
-      }
+        "name": "requestOption",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_index",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "_type",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_strike",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_premium",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_expiry",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_denomination",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_buyer",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "_seller",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct Exchange.OptionInfo",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
     ],
-    functionName: 'Do',
-    args: [parseInt(debouncedStrike), parseInt(debouncedExpiration), parseInt(debouncedLeverage)],
+    functionName: 'requestOption',
+    args: [index, false, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 20)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 

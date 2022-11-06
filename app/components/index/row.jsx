@@ -51,33 +51,7 @@ export function Row({ index }) {
         </a>
       </td>
       <td>{utils.formatEther(index._price)} ETH</td>
-      <td>{ index._volume.toNumber()}</td>
-      <td>
-        <a className="tooltip tooltip-bottom" data-tip="Entire collection is tracked" href='#'>
-          <div className="avatar-group -space-x-6">
-            <div className="avatar">
-              <div className="w-12">
-                <img src={avatarUrl[0]} />
-              </div>
-            </div>
-            <div className="avatar">
-              <div className="w-12">
-                <img src={avatarUrl[0]} />
-              </div>
-            </div>
-            <div className="avatar">
-              <div className="w-12">
-                <img src={avatarUrl[0]} />
-              </div>
-            </div>
-            <div className="avatar placeholder">
-              <div className="w-12 bg-primary-focus text-primary-content">
-                <span>+99</span>
-              </div>
-            </div>
-          </div>
-        </a>
-      </td>
+      <td>{ index._volume.toNumber()} ({ index._count.toNumber()}) </td>
       <td>
         <div className="flex items-center">
           <div className="tooltip tooltip-bottom" data-tip="Verified using zkSNARKs">
@@ -89,7 +63,6 @@ export function Row({ index }) {
         </div>
       </td>
       <td>
-
         <a href='#'>
           {index._manipulation >= 0.7 ? <span className="ml-3 badge badge-error">High</span> : (index._manipulation >= 0.3 ? <span className="ml-3 badge badge-warning">Medium</span> : <span className="ml-3 badge badge-success">Low</span>)}
         </a>
