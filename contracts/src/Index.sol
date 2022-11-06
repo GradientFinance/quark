@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.15;
 
-import './interfaces/IIndexDeployer.sol';
+import './interfaces/IIndexFactory.sol';
 import "prb-math/PRBMathSD59x18.sol";
 import "./uma/OptimisticOracleV2Interface.sol";
 
@@ -42,7 +42,7 @@ contract Index {
     //////////////////////////////////////////////////////////////*/
 
     constructor() {
-        (factory, coefficients, intercept, accuracy, attributes, collection, uma, denomination, name) = IIndexDeployer(msg.sender).parameters();
+        (factory, coefficients, intercept, accuracy, attributes, collection, uma, denomination, name) = IIndexFactory(msg.sender).getParameters();
 
         // Define the Optimistic oracle with the given UMA address.
         oracle = OptimisticOracleV2Interface(uma);
@@ -52,6 +52,7 @@ contract Index {
                              PUBLIC FUNCTIONS
     //////////////////////////////////////////////////////////////*/
     
+    // TODO:
     function getPrice(int256[] memory _characteristics, uint256 indexNumber) external view returns (int256) {
         // 10 eth
         return 10000000000000000000;

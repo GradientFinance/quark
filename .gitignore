@@ -10,4 +10,4 @@ out/
 *.sh
 venv
 /app
-contracts/script/deploy/Key.sol
+contracts/script/deploy/
