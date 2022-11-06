@@ -9,6 +9,7 @@ interface IIndexDeployer {
             address factory,
             int256[] memory coefficients,
             int256 intercept,
+            uint8 accuracy,
             string[] memory attributes,
             address collection,
             address uma,

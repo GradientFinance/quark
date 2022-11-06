@@ -12,16 +12,18 @@ contract Index {
                                  STORAGE
     //////////////////////////////////////////////////////////////*/
 
+    // Index paramaters
     address public immutable factory;
+    int256[] public coefficients;
+    int256 public intercept;
+    uint8 public accuracy;
+    string[] public attributes;
     address public immutable collection;
     address public immutable uma;
-
-    int256[] public coefficients;
-    int256[] public index;
-    int256 public intercept;
+    address public immutable denomination;
     string public name;
-    string[] public attributes;
-    address public denomination;
+
+    int256[] public index;
 
     OptimisticOracleV2Interface oracle;
 
@@ -40,7 +42,7 @@ contract Index {
     //////////////////////////////////////////////////////////////*/
 
     constructor() {
-        (factory, coefficients, intercept, attributes, collection, uma, denomination, name) = IIndexDeployer(msg.sender).parameters();
+        (factory, coefficients, intercept, accuracy, attributes, collection, uma, denomination, name) = IIndexDeployer(msg.sender).parameters();
 
         // Define the Optimistic oracle with the given UMA address.
         oracle = OptimisticOracleV2Interface(uma);

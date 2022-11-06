@@ -247,7 +247,6 @@ contract Exchange is ERC721, ReentrancyGuard {
         require(_ownerOf[_id] != address(0), "Option does not exist or is not filled.");
         require(block.timestamp > option._expiry, "Option not expired.");
     
-
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
 

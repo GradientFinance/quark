@@ -13,6 +13,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     event IndexCreated(
         int256[] coefficients,
         int256 intercept,
+        uint8 accuracy,
         string[] attributes,
         address indexed collection,
         address denomination,
@@ -50,6 +51,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     function createIndex(
         int256[] memory coefficients,
         int256 intercept,
+        uint8 accuracy,
         string[] memory attributes,
         address collection,
         address denomination,
@@ -58,12 +60,12 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
         require(getIndex[name] == address(0), "Index with given name already exists.");
         require(valid_denomination[denomination], "Collateral denomination token is not approved.");
 
-        index = deploy(address(this), coefficients, intercept, attributes, collection, uma, denomination, name);
+        index = deploy(address(this), coefficients, intercept, accuracy, attributes, collection, uma, denomination, name);
 
         getIndex[name] = index;
         isIndex[index] = true;
 
-        emit IndexCreated(coefficients, intercept, attributes, collection, denomination, name, index);
+        emit IndexCreated(coefficients, intercept, accuracy, attributes, collection, denomination, name, index);
     }
 
     function isValid(address index) external view returns (bool) {
