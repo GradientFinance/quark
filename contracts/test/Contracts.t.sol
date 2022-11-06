@@ -115,17 +115,17 @@ contract TestFactory is BaseSetup {
 contract TestExchange is BaseSetup {
     // Index Parameters
     int256[] coefficients = [int256(50), -63, 77, -28, 90];
-    int256 intercept = 242242;
+    int256 intercept = 485771907900406020;
     uint8 accuracy = 85;
-    string[] attributes = ['Aquamarine', 'Prom Dress', 'Crazy', 'Black', 'Bored'];
-    address collection = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    string name = 'BAYC Index 1'; 
+    string[] attributes = ['Sunrise', 'Prep-hypebeast', 'C-drip', '26', 'Green'];
+    address collection = 0x5Af0D9827E0c53E4799BB226655A1de152A425a5;
+    string name = 'Milady Index'; 
     uint256 manipulation = 10;
     bool opensource = true;
 
     // Option Parameters
     bool _type = true;
-    uint256 _strike = 15000000000000000000;  // 15 eth
+    uint256 _strike = 500000000000000000;  // 0.5 eth
     uint256 _expiry = 1669814557;
 
     function setUp() public virtual override {
@@ -325,7 +325,7 @@ contract TestExchange is BaseSetup {
 
         assertEq(exchange.getOptions(creator_and_buyer)[0], id);
 
-        uint256 premium = 1000000000000000000;  // 1 eth
+        uint256 premium = 10000000000000000;  // 0.01 eth
         
         vm.prank(seller);
         weth.approve(address(exchange), _strike);
@@ -353,7 +353,7 @@ contract TestExchange is BaseSetup {
 
         vm.warp(_expiry + 1);
     
-        uint256 price = 10000000000000000000;  // 10 eth
+        uint256 price = 485771907900406020;  // 0.48 eth
 
         seller_balance = weth.balanceOf(seller) + (_strike - (_strike - price));
         buyer_balance = weth.balanceOf(creator_and_buyer) + (_strike - price);
