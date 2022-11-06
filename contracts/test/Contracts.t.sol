@@ -163,6 +163,42 @@ contract TestExchange is BaseSetup {
         assertEq(exchange.getOptions(creator_and_buyer)[0], id);
     }
 
+    function testDoubleRequestOffer() public {
+        console.log(
+            "Create two requests for a put option."
+        );
+
+        vm.prank(creator_and_buyer);
+
+        address index = indexfactory.createIndex(
+            coefficients,
+            intercept,
+            accuracy,
+            attributes,
+            collection,
+            address(weth),  // denomination
+            name,
+            manipulation,
+            opensource
+        );
+
+        assertTrue(indexfactory.isValid(index));
+        assertEq(indexfactory.getIndices()[0], index);
+
+        vm.prank(creator_and_buyer);
+        weth.approve(address(exchange), 2**256-1);
+
+        vm.prank(creator_and_buyer);
+        uint256 id = exchange.requestOption(index, _type, _strike, _expiry);
+
+        assertEq(exchange.getOptions(creator_and_buyer)[0], id);
+
+        vm.prank(creator_and_buyer);
+        uint256 id2 = exchange.requestOption(index, _type, _strike, _expiry);
+
+        assertEq(exchange.getOptions(creator_and_buyer)[1], id2);
+    }
+
     function testCreateOffer() public {
         console.log(
             "Create a request for a put option and give it an offer."
