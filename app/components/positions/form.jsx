@@ -39,7 +39,7 @@ export function Put({ index, setCallActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0x3b729c910aca393061878bdf9aa6510c2629d376',
+    address: '0xcbB45f7A705238dC7BbC1eae5fD238FF2507cE9B',
     abi: [
       {
         "inputs": [
@@ -129,11 +129,9 @@ export function Put({ index, setCallActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 20)],
+    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 100)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
-
-  console.log([index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(1669814557)]);
 
   const { data, write } = useContractWrite(config);
 
@@ -357,7 +355,7 @@ export function Call({ index, setPutActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, false, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 20)],
+    args: [index, false, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(Math.floor(Date.now() / 1000) + 100)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 

@@ -1,16 +1,9 @@
 import { useEffect, useState, React } from 'react'
-import { usePrepareContractWrite, useContractWrite, useContractRead } from 'wagmi'
+import { usePrepareContractWrite, useContractWrite, useContractRead, useContractReads } from 'wagmi'
 import { utils } from 'ethers'
 
-
-export function ContractReader({ positions, setPositions, exchangeAddress }) {
-  if (positions.length != 0) {
-    return;
-  }
-
-  let indxs = [];
-
-  const exchangeRead = useContractRead({
+const calc = (exchangeAddress) => {
+  const { data, isSuccess } = useContractRead({
     address: exchangeAddress,
     abi: [{
       "inputs": [
@@ -35,91 +28,95 @@ export function ContractReader({ positions, setPositions, exchangeAddress }) {
     args: ["0xe3d8E58551d240626D50EE26FAFF2649e1EEE3cb"],
   });
 
-  if (exchangeRead["isError"] || !exchangeRead["data"] || exchangeRead["data"].length == 0) {
-    return;
+  let contracts = [];
+
+  if (isSuccess) {
+    for (let i = 0; i < data.length; i++) {
+      const point = {
+        address: exchangeAddress,
+        abi: [{
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_id",
+              "type": "uint256"
+            }
+          ],
+          "name": "getOption",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "_id",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "_index",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "_type",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_strike",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_premium",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_expiry",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "_denomination",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_timestamp",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "_buyer",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "_seller",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct Exchange.OptionInfo",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }],
+        functionName: 'getOption',
+        args: [data[i].toNumber()],
+      }
+      contracts.push(point)
+    }
   }
 
-  for (let i = 0; i < exchangeRead["data"].length; i++) {
-    const { data } = useContractRead({
-      address: exchangeAddress,
-      abi: [{
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_id",
-            "type": "uint256"
-          }
-        ],
-        "name": "getOption",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "_id",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "_index",
-                "type": "address"
-              },
-              {
-                "internalType": "bool",
-                "name": "_type",
-                "type": "bool"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_strike",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_premium",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_expiry",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "_denomination",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "_timestamp",
-                "type": "uint256"
-              },
-              {
-                "internalType": "address",
-                "name": "_buyer",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "_seller",
-                "type": "address"
-              }
-            ],
-            "internalType": "struct Exchange.OptionInfo",
-            "name": "",
-            "type": "tuple"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }],
-      functionName: 'getOption',
-      args: [exchangeRead["data"][i].toNumber()],
-    });
-    indxs.push(data);
-  }
+  const read = useContractReads({
+    contracts: contracts
+  })
 
-  setPositions(indxs);
+  return read;
 }
 
 
@@ -148,7 +145,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
       },
     ],
     functionName: 'acceptOption',
-    args: [3],
+    args: [0],
   })
 
   const { data, write } = useContractWrite(config);
@@ -203,7 +200,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
                     </btn>
                   </div>}
               </td>
-              <td className="text-center">{ utils.formatEther( position._premium ) } ETH</td>
+              <td className="text-center">{utils.formatEther(position._premium)} ETH</td>
             </tr>
           ))}
         </tbody>
@@ -227,7 +224,13 @@ export function NoActivePositions() {
 export function Positions() {
   let exchangeAddress = '0xcbB45f7A705238dC7BbC1eae5fD238FF2507cE9B';
 
-  let [positions, setPositions] = useState([]);
+  let positions = []
+
+  const data = calc(exchangeAddress);
+  if (data["isSuccess"]) {
+    positions = data["data"];
+    console.log(positions);
+  }
 
   return (
     <div className="card bg-base-100 shadow-xl">
@@ -240,7 +243,6 @@ export function Positions() {
         </h2>
         {positions.length > 0 ? <ActivePositions positions={positions} exchangeAddress={exchangeAddress} /> : <NoActivePositions />}
       </div>
-      <ContractReader positions={positions} setPositions={setPositions} exchangeAddress={exchangeAddress} />
     </div>
   )
 }
