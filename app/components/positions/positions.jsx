@@ -147,12 +147,12 @@ export function ActivePositions({ positions, exchangeAddress }) {
       },
     ],
     functionName: 'acceptOption',
-    args: [1],
+    args: [3],
   })
 
   const { data, write } = useContractWrite(config);
 
-  console.log(positions[0]);
+  console.log(positions[2]);
 
   return (
     <div className="overflow-x-auto max-h-min">

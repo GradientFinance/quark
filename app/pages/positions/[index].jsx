@@ -16,7 +16,7 @@ export function Content({ indexAddress, index }) {
       <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
         <div className='w-full grid-cols-3 gap-4 overflow-y-hidden overflow-x-scroll px-10 pt-1 pb-10 xl:grid xl:overflow-x-auto xl:px-4 svelte-1n6ue57'>
           <div className='col-span-3'>
-            <Bar />
+            <Bar index={ index }/>
           </div>
           <div className="col-span-2">
             <Chart />
@@ -46,7 +46,7 @@ export default function App() {
 
   useEffect(() => {
     document.title = "Indices";
-    document.documentElement.setAttribute("data-theme", "cupcake");
+    document.documentElement.setAttribute("data-theme", "black");
     document.documentElement.className = 'bg-base-300';
   });
 

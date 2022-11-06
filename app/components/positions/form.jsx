@@ -30,7 +30,7 @@ function useDebounce(value, delay) {
 }
 
 export function Put({ index, setCallActive }) {
-  const [strike, setStrike] = React.useState(15);
+  const [strike, setStrike] = React.useState(1);
   const [expirationDays, setExpirationDays] = React.useState(30);
   const [leverage, setLeveraege] = React.useState(10);
 
@@ -129,7 +129,7 @@ export function Put({ index, setCallActive }) {
       },
     ],
     functionName: 'requestOption',
-    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(1669814557)],
+    args: [index, true, BigNumber.from(debouncedStrike.toString()), parseInt(1669814557)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
@@ -234,24 +234,20 @@ export function Put({ index, setCallActive }) {
                 </dt>
                 <dd className="text-sm font-medium text-base-900">{leverage}x</dd>
               </div>
-              <div className="flex items-center justify-between border-t border-base-200 pt-2">
-                <dt className="text-base font-medium text-base-900">Premium to pay</dt>
-                <dd className="text-base font-medium text-base-900">$112.32</dd>
-              </div>
             </dl>
             <button className={"btn btn-block space-x-2" + (isLoading ? " loading" : "")} disabled={!write || isLoading}>
-              {isLoading ? 'Buying Put' :
+              {isLoading ? 'Requesting Put' :
                 <div className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
                   </svg>
-                  Buy Put
+                  Request Put
                 </div>
               }
             </button>
             {isSuccess && (
               <div>
-                Successfully bought put!
+                Successfully request put!
               </div>
             )}
           </form>
@@ -401,24 +397,20 @@ export function Call({ index, setPutActive }) {
                 </dt>
                 <dd className="text-sm font-medium text-base-900">{leverage}x</dd>
               </div>
-              <div className="flex items-center justify-between border-t border-base-200 pt-2">
-                <dt className="text-base font-medium text-base-900">Premium to pay</dt>
-                <dd className="text-base font-medium text-base-900">$112.32</dd>
-              </div>
             </dl>
             <button className={"btn btn-block space-x-2" + (isLoading ? " loading" : "")} disabled={!write || isLoading}>
-              {isLoading ? 'Buying Call' :
+              {isLoading ? 'Requesting Call' :
                 <div className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
                   </svg>
-                  Buy Call
+                  Request Call
                 </div>
               }
             </button>
             {isSuccess && (
               <div>
-                Successfully bought call!
+                Successfully requested call!
               </div>
             )}
           </form>
