@@ -39,7 +39,7 @@ export function Put({ index, setCallActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0xdf970603ea1f088a66c4eecd3c7d740c018543cc',
+    address: '0x3b729c910aca393061878bdf9aa6510c2629d376',
     abi: [
       {
         "inputs": [
@@ -133,7 +133,7 @@ export function Put({ index, setCallActive }) {
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
 
-  console.log([index, true, parseInt(debouncedStrike), parseInt(debouncedExpiration)*24*60*60]);
+  console.log([index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(1669814557)]);
 
   const { data, write } = useContractWrite(config);
 

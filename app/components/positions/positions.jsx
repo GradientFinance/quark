@@ -1,85 +1,165 @@
-import React from "react";
-import { usePrepareContractWrite, useContractWrite } from 'wagmi'
+import { useEffect, useState, React } from 'react'
+import { usePrepareContractWrite, useContractWrite, useContractRead } from 'wagmi'
 
 
-const orders = [
-  {
-    confirmed: true,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    confirmed: false,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    confirmed: true,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    confirmed: false,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    confirmed: true,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    confirmed: true,
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-]
+export function ContractReader({ positions, setPositions, exchangeAddress }) {
+  if (positions.length != 0) {
+    return;
+  }
 
-export function ActivePositions() {
-  const { acceptConfig } = usePrepareContractWrite({
-    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  let indxs = [];
+
+  const exchangeRead = useContractRead({
+    address: exchangeAddress,
+    abi: [{
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "getOptions",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }],
+    functionName: 'getOptions',
+    args: ["0xe3d8E58551d240626D50EE26FAFF2649e1EEE3cb"],
+  });
+
+  if (exchangeRead["isError"] || !exchangeRead["data"] || exchangeRead["data"].length == 0) {
+    return;
+  }
+
+  for (let i = 0; i < exchangeRead["data"].length; i++) {
+    const { data } = useContractRead({
+      address: exchangeAddress,
+      abi: [{
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
+          }
+        ],
+        "name": "getOption",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_index",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "_type",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_strike",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_premium",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_expiry",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_denomination",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "_timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "_buyer",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "_seller",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct Exchange.OptionInfo",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }],
+      functionName: 'getOption',
+      args: [exchangeRead["data"][i].toNumber()],
+    });
+    indxs.push(data);
+  }
+
+  setPositions(indxs);
+}
+
+
+export function ActivePositions({ positions, exchangeAddress }) {
+  const { config } = usePrepareContractWrite({
+    address: exchangeAddress,
     abi: [
       {
-        name: 'accept',
-        type: 'function',
-        stateMutability: 'nonpayable',
-        inputs: [],
-        outputs: [],
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
+          }
+        ],
+        "name": "acceptOption",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
     ],
-    functionName: 'accept',
+    functionName: 'acceptOption',
+    args: [1],
   })
 
-  const { acceptWrite } = useContractWrite(acceptConfig)
+  const { data, write } = useContractWrite(config);
+
+  console.log(positions[0]);
 
   return (
     <div className="overflow-x-auto max-h-min">
       <table className="table table-compact w-full">
         <thead>
           <tr>
-            <th>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-              </svg>
-            </th>
+            <th>Id</th>
             <th className="text-center">Type</th>
             <th className="text-center">PnL</th>
             <th className="text-center">Strike</th>
@@ -90,19 +170,16 @@ export function ActivePositions() {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order, index) => (
+          {positions.map((position, index) => (
             <tr>
-              <td>{order.secondsAgo}s ago</td>
-              <td className="text-center">{order.type}</td>
-              <td className="text-center">
-                {order.confirmed ?
-                  <div className="badge badge-success">24%</div> : ""}
-              </td>
-              <td className="text-center">{order.strike} ETH</td>
-              <td className="text-center">In {order.expiration} days</td>
-              <td className="text-center">{order.leverage}x</td>
+              <td>{position._id.toNumber()}</td>
+              <td className="text-center">{position._type ? 'Put' : 'Call'}</td>
+              <td className="text-center"></td>
+              <td className="text-center"> ETH</td>
+              <td className="text-center">In {position._expiry.toNumber()} days</td>
+              <td className="text-center">1x</td>
               <td>
-                {order.confirmed ?
+                {position._timestamp.toNumber() != 0 ?
                   <div>
                     <button className="btn btn-xs btn-outline">
                       Close
@@ -115,11 +192,11 @@ export function ActivePositions() {
                   </div>}
               </td>
               <td>
-                {order.confirmed ?
+                {position._timestamp.toNumber() != 0 ?
                   '' :
 
                   <div>
-                    <btn className="btn btn-xs btn-success" disabled={!acceptWrite} onClick={() => acceptWrite?.()}>
+                    <btn className="btn btn-xs btn-success" onClick={() => write?.()}>
                       Accept
                     </btn>
                   </div>}
@@ -145,6 +222,10 @@ export function NoActivePositions() {
 }
 
 export function Positions() {
+  let exchangeAddress = '0x3b729c910aca393061878bdf9aa6510c2629d376';
+
+  let [positions, setPositions] = useState([]);
+
   return (
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
@@ -154,8 +235,9 @@ export function Positions() {
           </svg>
           All Positions
         </h2>
-        {orders.length > 0 ? <ActivePositions /> : <NoActivePositions />}
+        {positions.length > 0 ? <ActivePositions positions={positions} exchangeAddress={exchangeAddress} /> : <NoActivePositions />}
       </div>
+      <ContractReader positions={positions} setPositions={setPositions} exchangeAddress={exchangeAddress} />
     </div>
   )
 }

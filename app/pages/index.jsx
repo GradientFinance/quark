@@ -110,7 +110,7 @@ export function ContractReader({ indices, setIndices, factoryAddress }) {
 
 export function Content({ indices, setIndices, factoryAddress }) {
   return (
-    <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
+    <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300 mb-6">
       <div className="hero my-10">
         <div className="hero-content">
           <div>
@@ -151,14 +151,6 @@ export function Content({ indices, setIndices, factoryAddress }) {
                   <path d="M15.5 2A1.5 1.5 0 0014 3.5v13a1.5 1.5 0 001.5 1.5h1a1.5 1.5 0 001.5-1.5v-13A1.5 1.5 0 0016.5 2h-1zM9.5 6A1.5 1.5 0 008 7.5v9A1.5 1.5 0 009.5 18h1a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0010.5 6h-1zM3.5 10A1.5 1.5 0 002 11.5v5A1.5 1.5 0 003.5 18h1A1.5 1.5 0 006 16.5v-5A1.5 1.5 0 004.5 10h-1z" />
                 </svg>
                 <h2>Volume</h2>
-              </div>
-            </th>
-            <th>
-              <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-2">
-                  <path fillRule="evenodd" d="M1 2.75A.75.75 0 011.75 2h16.5a.75.75 0 010 1.5H18v8.75A2.75 2.75 0 0115.25 15h-1.072l.798 3.06a.75.75 0 01-1.452.38L13.41 18H6.59l-.114.44a.75.75 0 01-1.452-.38L5.823 15H4.75A2.75 2.75 0 012 12.25V3.5h-.25A.75.75 0 011 2.75zM7.373 15l-.391 1.5h6.037l-.392-1.5H7.373zm7.49-8.931a.75.75 0 01-.175 1.046 19.326 19.326 0 00-3.398 3.098.75.75 0 01-1.097.04L8.5 8.561l-2.22 2.22A.75.75 0 115.22 9.72l2.75-2.75a.75.75 0 011.06 0l1.664 1.663a20.786 20.786 0 013.122-2.74.75.75 0 011.046.176z" clipRule="evenodd" />
-                </svg>
-                <h2>Volatility</h2>
               </div>
             </th>
             <th>
@@ -209,7 +201,7 @@ export function Content({ indices, setIndices, factoryAddress }) {
 }
 
 export default function App() {
-  let factoryAddress = '0x7deda1aef6b81aa3c21e9220dbd03dac626ad6f7';
+  let factoryAddress = '0xa3dd7927a44404ce2b15a559a274ec9fa7bb5f31';
 
   let [indices, setIndices] = useState([]);
 
