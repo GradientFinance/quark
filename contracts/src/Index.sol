@@ -31,6 +31,8 @@ contract Index {
     uint256 public volume;
     uint256 public count;
     int256[] public index;
+    int256[][] public sales; // price is first slot. following slots are NFT chars
+    int256 public lastest_price;
 
     /*//////////////////////////////////////////////////////////////
                              UMA CONSTANTS
@@ -56,8 +58,11 @@ contract Index {
         // Define the Optimistic oracle with the given UMA address.
         oracle = OptimisticOracleV2Interface(uma);
 
-        // Define the ancillary data
+        // Define the ancillary data.
         ancillaryData = bytes(createAncillary());
+
+        // Set the intial price.
+        lastest_price = intercept;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -67,18 +72,50 @@ contract Index {
     /**
     * @dev Returns the current index price.
     **/
-    function getPrice() public pure returns (int256) {
-        // returns 10 eth
-        return 10000000000000000000;
+    function getPrice() public view returns (int256) {
+        return lastest_price;
     }
 
     /**
     * @dev Add volume by the exchange.
     **/
     function addVolume(uint256 _amount) external {
-        // require(msg.sender == exchange);
         volume = volume + _amount;
         count++;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             LINEAR MODEL
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+    * @dev Updates the index price with new sales data.
+    **/
+    function updateIndex() internal returns (int256){
+        int256 num = 0;
+        int256 denom = 0;
+
+        for (uint256 i = 0; i < sales.length; i++) {
+            num += sales[i][0];
+            denom += getRefPrice(sales[i], true);
+        }
+
+        index.push(num / denom);
+
+        return num / denom;
+    }
+    
+    /**
+    * @dev Get the reference price for each o f the characteristics.
+    **/
+    function getRefPrice(int256[] memory _characteristics, bool includePrice) internal view returns (int256) {
+        int256 price = intercept;
+
+        for (uint256 i = 0; i < coefficients.length; i++) {
+            price += coefficients[i] * _characteristics[includePrice ? i + 1 : i];
+        }
+
+        return price;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -90,7 +127,7 @@ contract Index {
     **/
     function requestData() public {
         requestTime = block.timestamp; // Set the request time to the current block time.
-        IERC20 bondCurrency = IERC20(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6); // Use Görli WETH as the bond currency.
+        IERC20 bondCurrency = IERC20(denomination); // Use the given denomination (using WETH).
         uint256 reward = 0; // Set the reward to 0 (so we dont have to fund it from this contract).
 
         // Now, make the price request to the Optimistic oracle and set the liveness to 30 so it will settle quickly.
@@ -107,10 +144,21 @@ contract Index {
     }
 
     /**
-    * @dev Fetch the resolved price from the Optimistic Oracle that was settled.
+    * @dev Fetch the resolved price from the Optimistic Oracle that was settled and calculate new price.
     **/
-    function getSettledData() public view returns (int256) {
-        return oracle.getRequest(address(this), identifier, requestTime, ancillaryData).resolvedPrice;
+    function getSettledData() public returns (int256) {
+        int256 data = oracle.getRequest(address(this), identifier, requestTime, ancillaryData).resolvedPrice;
+        // If price is zero, then no new sale for the given collection with the tracked attributes,
+        if (data == 0) {
+            return 0;
+        }
+        else {
+            // Compute new sale
+            sales.push([data, 1]);
+
+            lastest_price = updateIndex();
+            return lastest_price;
+        }
     }
 
     /*//////////////////////////////////////////////////////////////
