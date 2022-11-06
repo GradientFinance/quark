@@ -1,6 +1,6 @@
 import { useEffect, useState, React } from 'react'
 import { usePrepareContractWrite, useContractWrite, useContractRead, useContractReads } from 'wagmi'
-import { utils } from 'ethers'
+import { utils, BigNumber } from 'ethers'
 
 const calc = (exchangeAddress) => {
   const { data, isSuccess } = useContractRead({
@@ -151,6 +151,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
   const { data, write } = useContractWrite(config);
 
   console.log(positions[0]);
+  console.log(positions[1]);
 
   return (
     <div className="overflow-x-auto max-h-min">
@@ -172,10 +173,10 @@ export function ActivePositions({ positions, exchangeAddress }) {
             <tr>
               <td>{position._id.toNumber()}</td>
               <td >{position._type ? 'Put' : 'Call'}</td>
-              <td >{ '' } ETH</td>
+              <td >{ utils.formatEther(position._strike.toString()) } ETH</td>
               <td >{ position._expiry.toNumber() - Math.floor(Date.now() / 1000) <= 0 ? 'Expired' : ('In ' + position._expiry.toNumber() - Math.floor(Date.now() / 1000) + "s")} </td>
               <td>1x</td>
-              <td>{ position._timestamp.toNumber() == 0 ? 'Pending' : position._premium.toNumber()}</td>
+              <td>{ position._timestamp.toNumber() == 0 ? 'Pending' : utils.formatEther(position._premium.toString())}</td>
               <td>
                 {position._timestamp.toNumber() != 0 ?
                   <div>

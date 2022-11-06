@@ -8,37 +8,29 @@ const sales = [
   {
     secondsAgo: '1',
     type: 'Put',
-    strike: '82',
+    strike: '0.412',
     expiration: '23',
-    leverage: '1'
+    leverage: '1',
+    APR: '54',
+    premium: '0.024',
   },
   {
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
+    secondsAgo: '4',
+    type: 'Call',
+    strike: '0.592',
+    expiration: '4',
+    leverage: '1',
+    APR: '84',
+    premium: '0.094',
   },
   {
-    secondsAgo: '1',
+    secondsAgo: '7',
     type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
-  },
-  {
-    secondsAgo: '1',
-    type: 'Put',
-    strike: '82',
-    expiration: '23',
-    leverage: '1'
+    strike: '0.2041',
+    expiration: '2',
+    leverage: '30',
+    APR: '491',
+    premium: '0.24',
   },
 ]
 
@@ -82,14 +74,14 @@ export function MakeBid({ exchangeAddress }) {
       <input type="checkbox" id="my-modal-4" className="modal-toggle" />
       <label htmlFor="my-modal-4" className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">Make bid</h3>
+          <h3 className="text-lg font-bold">Fill order</h3>
           <p className="py-4">The buyer will then choose whether to accept your bid.</p>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Enter amount</span>
             </label>
             <label className="input-group">
-              <span>BTC</span>
+              <span>USDC</span>
               <input type="text" placeholder="0.01" className="input input-bordered" />
               <button className="btn btn-square" onClick={() => write?.()}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
@@ -113,6 +105,7 @@ export function Bids() {
         <div className="hero-content mx-auto max-w-md text-center md:max-w-full my-10">
           <div>
             <h3 className="mb-5 text-3xl font-bold">Fill Orders</h3>
+            <p className="mb-5 text-1xl">Fill orders from other users and capture the spreads from high APRs.</p>
             <div className="overflow-x-auto w-full">
               <table className="table w-full bg-trasparent">
                 <thead>
@@ -133,8 +126,8 @@ export function Bids() {
                       <td className="bg-base-100/[.04] text-center">In {sale.expiration} days</td>
                       <td className="bg-base-100/[.04] text-center">{sale.leverage}x</td>
                       <td className="bg-base-100/[.04] text-center">
-                        <span className="badge badge-ghost mr-2"><a href="#">54% APR</a></span>
-                        <span className="badge badge-ghost badge-outline badge-sm"><a href="#">1.402 ETH</a></span>
+                        <span className="badge badge-ghost mr-2"><a href="#">{sale.APR}% APR</a></span>
+                        <span className="badge badge-ghost badge-outline badge-sm"><a href="#">{sale.premium} ETH</a></span>
                       </td>
                       <td className="bg-base-100/[.04] text-center">
                         <label htmlFor="my-modal-4">
