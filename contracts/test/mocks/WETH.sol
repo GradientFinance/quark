@@ -11,11 +11,11 @@ interface ERC677Receiver {
     ) external;
 }
 
-contract ApeCoin is ERC20 {
+contract WETH is ERC20 {
     uint256 constant INITIAL_SUPPLY = 1000000000000000000000000;
     uint8 constant DECIMALS = 18;
 
-    constructor() ERC20("ApeCoin", "APE", DECIMALS) {
+    constructor() ERC20("WETH", "WETH", DECIMALS) {
         _mint(msg.sender, INITIAL_SUPPLY);
     }
 }

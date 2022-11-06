@@ -76,7 +76,7 @@ contract Index {
     * @dev Add volume by the exchange.
     **/
     function addVolume(uint256 _amount) external {
-        require(msg.sender == exchange);
+        // require(msg.sender == exchange);
         volume = volume + _amount;
     }
 
@@ -128,7 +128,7 @@ contract Index {
     /**
     * @dev Function that returns index data and stats, used by the front-end.
     **/
-    function getData() external view returns (string memory, int256, uint256, uint256, uint8, uint256, bool) {
+    function getData() external view returns (string memory, int256, uint256, uint256, uint8, uint256, bool, address, address) {
         return(
             name,
             getPrice(),
@@ -136,7 +136,9 @@ contract Index {
             volatility, 
             accuracy, 
             manipulation, 
-            opensource
+            opensource,
+            address(this),
+            denomination
         );
     }
 

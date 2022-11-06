@@ -3,20 +3,21 @@ pragma solidity ^0.8.15;
 
 import "solmate/utils/ReentrancyGuard.sol";
 import "openzeppelin-contracts/utils/Strings.sol";
-import "openzeppelin-contracts/utils/cryptography/SignatureChecker.sol";
 import "solmate/tokens/ERC721.sol";
 
 interface IIndex {
     function getPrice() external view returns (uint256);
 
     function getDenomination() external view returns (address);
+
+    function addVolume(uint256 _amount) external;
 }
 
-interface IIndexFactory {
+interface _IIndexFactory {
     function isValid(address index) external view returns (bool);
 }
 
-interface IERC20 {
+interface _IERC20 {
     function totalSupply() external view returns (uint256);
 
     function balanceOf(address account) external view returns (uint256);
@@ -80,8 +81,8 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     string public constant baseURI = "https://link/";
-    
-    IIndexFactory factory;
+
+    _IIndexFactory factory;
 
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
@@ -101,6 +102,7 @@ contract Exchange is ERC721, ReentrancyGuard {
     }
     
     mapping(uint256 => OptionInfo) public options;
+    mapping(address => uint256[]) public pending_or_active_options;
 
     uint256 public optionId;
     
@@ -109,10 +111,10 @@ contract Exchange is ERC721, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     /**
-    * @notice Defines the accepted collaterals as well as the factory address to verify indeces,
+    * @notice Defines the accepted collaterals as well as the factory address to verify indices,
     **/
     constructor(address _factory) ERC721("Exchange Option", "OPTION") {
-        factory = IIndexFactory(_factory);
+        factory = _IIndexFactory(_factory);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -126,7 +128,7 @@ contract Exchange is ERC721, ReentrancyGuard {
     * @param _strike Strike price,
     * @param _expiry Expiration date (in UNIX seconds) of option,
     **/
-    function requestOption(address _index, bool _type, uint256 _strike, uint256 _expiry) external nonReentrant returns (OptionInfo memory) {
+    function requestOption(address _index, bool _type, uint256 _strike, uint256 _expiry) external nonReentrant returns (uint256) {
         require(factory.isValid(_index), "Index is not valid.");
         require(block.timestamp < _expiry, "Option is expired.");
 
@@ -134,9 +136,9 @@ contract Exchange is ERC721, ReentrancyGuard {
         address _denomination = index.getDenomination();
 
         // This allowance is a filter to prevent spamming the front-end
-        IERC20 collateral = IERC20(_denomination);
-        uint256 allowance = collateral.allowance(msg.sender, address(this));
-        require(allowance == uint256(2**256-1), "Allowance must be to the maximum spending possible (to pay any premium after acepting)");
+        // _IERC20 collateral = _IERC20(_denomination);
+        // uint256 allowance = collateral.allowance(msg.sender, address(this));
+        // require(allowance == uint256(2**256-1), "Allowance must be equal to the maximum spending possible (to pay any premium after acepting)");
 
         optionId++;
 
@@ -154,10 +156,11 @@ contract Exchange is ERC721, ReentrancyGuard {
         });
 
         options[optionId] = option;
+        pending_or_active_options[msg.sender].push(optionId);
         
         emit RequestedOption(optionId, option);
 
-        return option;
+        return optionId;
     }
 
     /**
@@ -165,7 +168,7 @@ contract Exchange is ERC721, ReentrancyGuard {
     * @param _id ID of targetted option.
     * @param _premium Premium offer.
     **/
-    function createOffer(uint256 _id, uint256 _premium) external nonReentrant returns (OptionInfo memory) {
+    function createOffer(uint256 _id, uint256 _premium) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
 
         require(option._timestamp == 0);
@@ -175,32 +178,33 @@ contract Exchange is ERC721, ReentrancyGuard {
         address _denomination = index.getDenomination();
 
         // This allowance is a filter to prevent spamming the front-end
-        IERC20 collateral = IERC20(_denomination);
+        _IERC20 collateral = _IERC20(_denomination);
         uint256 allowance = collateral.allowance(msg.sender, address(this));
         require(allowance >= option._strike, "Allowance must be equal or greater than the option strike.");
 
-        option._seller = msg.sender;
-        option._premium = _premium;
+        options[_id]._seller = msg.sender;
+        options[_id]._premium = _premium;
 
-        emit OfferOption(_id, msg.sender, _premium);
+        emit OfferOption(_id, option._seller, option._premium);
 
-        return option;
+        return true;
     }
 
     /**
     * @notice Accepts the current option parameters,
     * @param _id ID of option to accept and mint.
     **/
-    function acceptOption(uint256 _id) external nonReentrant returns (OptionInfo memory) {
+    function acceptOption(uint256 _id) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
 
         require(msg.sender == option._buyer);
         require(option._timestamp == 0);
+        require(option._seller != address(0));
 
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
     
-        IERC20 collateral = IERC20(_denomination);
+        _IERC20 collateral = _IERC20(_denomination);
         uint256 buyer_allowance = collateral.allowance(option._buyer, address(this));
         uint256 seller_allowance = collateral.allowance(option._seller, address(this));
 
@@ -210,16 +214,18 @@ contract Exchange is ERC721, ReentrancyGuard {
         bool seller_payment = collateral.transferFrom(option._buyer, option._seller, option._premium);
         require(seller_payment, "Seller premium payment transfer failed.");
 
-        bool receive_payment = collateral.transferFrom(option._seller, option._buyer, option._strike);
+        bool receive_payment = collateral.transferFrom(option._seller, address(this), option._strike);
         require(receive_payment, "Receive collateral transfer failed.");
 
-        option._timestamp = block.timestamp;
+        options[_id]._timestamp = block.timestamp;
 
         _safeMint(option._buyer, option._id);
         
+        index.addVolume(option._strike);
+
         emit SoldOption(option._id, option._buyer, option._seller, option);
 
-        return option;
+        return true;
     }
 
     /**
@@ -251,7 +257,7 @@ contract Exchange is ERC721, ReentrancyGuard {
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
 
-        IERC20 collateral = IERC20(_denomination);
+        _IERC20 collateral = _IERC20(_denomination);
 
         address receiver = _ownerOf[_id];
         uint256 price = index.getPrice();
@@ -263,13 +269,15 @@ contract Exchange is ERC721, ReentrancyGuard {
             uint256 payback_holder = option._strike - price;
             uint256 payback_seller = option._strike - payback_holder;
 
+            require(payback_holder + payback_seller == option._strike, 'Payments must match');
+
             // Paying option filler.
-            bool payment_seller = collateral.transferFrom(address(this), option._seller, payback_seller);
+            bool payment_seller = collateral.transfer(option._seller, payback_seller);
             require(payment_seller, "Filler payback transfer failed.");
 
             // Option is put, hence profitable.
             if (option._type) {
-                bool payment_holder = collateral.transferFrom(address(this), receiver, payback_holder);
+                bool payment_holder = collateral.transfer(receiver, payback_holder);
                 require(payment_holder, "Holder payback transfer failed.");
             }
             // Option is call, hence not profitable.
@@ -283,7 +291,7 @@ contract Exchange is ERC721, ReentrancyGuard {
             uint256 payback_seller = option._strike - payback_holder;
 
             // Paying option filler.
-            bool payment_seller = collateral.transferFrom(address(this), option._seller, payback_seller);
+            bool payment_seller = collateral.transfer(option._seller, payback_seller);
             require(payment_seller, "Filler payback transfer failed.");
 
             // Option is put, hence not profitable.
@@ -293,12 +301,14 @@ contract Exchange is ERC721, ReentrancyGuard {
             // Option is call, hence profitable.
             else {
                 // Paying option holder.
-                bool payment_holder = collateral.transferFrom(address(this), receiver, payback_holder);
+                bool payment_holder = collateral.transfer(receiver, payback_holder);
                 require(payment_holder, "Holder payback transfer failed.");
             }
         }
 
         emit ExercisedOption(_id, option);
+
+        delete options[_id];
 
         return true;
     }
@@ -315,6 +325,14 @@ contract Exchange is ERC721, ReentrancyGuard {
         OptionInfo memory _option = options[_id];
 
         return _option;
+    }
+
+    /**
+    * @notice Returns active and pending options from a given address,
+    * @param _address address to fetch.
+    **/
+    function getOptions(address _address) public view returns (uint256[] memory) {
+        return pending_or_active_options[_address];
     }
 
     /**

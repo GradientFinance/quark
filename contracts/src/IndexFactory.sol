@@ -27,14 +27,14 @@ contract IndexFactory is ReentrancyGuard {
                                  STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    // Store all the created indeces.
+    // Store all the created indices.
     mapping(string => address) public getIndex;
     mapping(address => bool) public isIndex;
     mapping(address => bool) public valid_denomination;
 
     address public immutable uma; 
     address public immutable exchange;
-    address[] public indeces;
+    address[] public indices;
 
     struct Parameters {
         address _exchange;
@@ -61,6 +61,8 @@ contract IndexFactory is ReentrancyGuard {
         valid_denomination[0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6] = true;
         // USDC (goerli)
         valid_denomination[0x07865c6E87B9F70255377e024ace6630C1Eaa37F] = true;
+        // WETH (foundry)
+        valid_denomination[0xa2F9062527F5588fcfD767b218Ce33210574F3A7] = true;
 
         // TODO: Add the exchange contract
         exchange = address(0);
@@ -90,7 +92,7 @@ contract IndexFactory is ReentrancyGuard {
 
         getIndex[_name] = index;
         isIndex[index] = true;
-        indeces.push(index);
+        indices.push(index);
 
         emit IndexCreated(_coefficients, _intercept, _accuracy, _attributes, _collection, _denomination, _name, _manipulation, _opensource, index);
     }
@@ -115,8 +117,8 @@ contract IndexFactory is ReentrancyGuard {
         return isIndex[index];
     }
 
-    function getIndeces() external view returns (address[] memory) {
-        return indeces;
+    function getIndices() external view returns (address[] memory) {
+        return indices;
     }
 
     /*//////////////////////////////////////////////////////////////
