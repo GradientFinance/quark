@@ -171,8 +171,8 @@ contract Exchange is ERC721, ReentrancyGuard {
     function createOffer(uint256 _id, uint256 _premium) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
 
-        require(option._timestamp == 0);
-        require(_premium < option._premium);
+        require(option._timestamp == 0, "Option to create offer for is not inactive.");
+        require(_premium < option._premium, "New premium must be less than the previous premium.");
         
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
@@ -197,9 +197,9 @@ contract Exchange is ERC721, ReentrancyGuard {
     function acceptOption(uint256 _id) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
 
-        require(msg.sender == option._buyer);
-        require(option._timestamp == 0);
-        require(option._seller != address(0));
+        require(msg.sender == option._buyer, "Sender must be the option buyer.");
+        require(option._timestamp == 0, "Option is not inactive.");
+        require(option._seller != address(0), "Option seller cannot be null.");
 
         IIndex index = IIndex(option._index);
         address _denomination = index.getDenomination();
@@ -234,8 +234,9 @@ contract Exchange is ERC721, ReentrancyGuard {
     **/
     function cancelOption(uint256 _id) external nonReentrant returns (bool) {
         OptionInfo memory option = getOption(_id);
-        require(option._timestamp == 0);
-        require(msg.sender == option._buyer && msg.sender == option._seller);
+
+        require(option._timestamp == 0, "Option must be pending to cancel.");
+        require(msg.sender == option._buyer && msg.sender == option._seller, "Sender must be option buyer or seller.");
 
         delete options[_id];
 
@@ -326,6 +327,12 @@ contract Exchange is ERC721, ReentrancyGuard {
 
         return _option;
     }
+
+    // function getOption(uint256 _id) public view returns (uint256 _id, bool _type, uint256 _strike, uint256 _premium, address _seller, uint256 _timestamp) {
+    //     OptionInfo memory _option = options[_id];
+
+    //     return (_option._id, _option._type, _option._strike, _option._premium, _option._seller, _option._timestamp);
+    // }
 
     /**
     * @notice Returns active and pending options from a given address,
