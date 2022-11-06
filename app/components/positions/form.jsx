@@ -4,6 +4,9 @@ import {
   useContractWrite,
   useWaitForTransaction,
 } from 'wagmi'
+import {
+  BigNumber
+} from 'ethers'
 
 function useDebounce(value, delay) {
   // State and setters for debounced value
@@ -26,7 +29,7 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-export function Put({ indexAddress, setCallActive }) {
+export function Put({ index, setCallActive }) {
   const [strike, setStrike] = React.useState(15);
   const [expirationDays, setExpirationDays] = React.useState(30);
   const [leverage, setLeveraege] = React.useState(10);
@@ -36,99 +39,101 @@ export function Put({ indexAddress, setCallActive }) {
   const debouncedLeverage = useDebounce(leverage, 500);
 
   const { config } = usePrepareContractWrite({
-    address: '0xfcfe28867ba312122d79a82ddd11fe7cf8b5a1f3',
+    address: '0xdf970603ea1f088a66c4eecd3c7d740c018543cc',
     abi: [
       {
-        inputs: [
+        "inputs": [
           {
-            internalType: "address",
-            name: "_index",
-            type: "address"
+            "internalType": "address",
+            "name": "_index",
+            "type": "address"
           },
           {
-            internalType: "bool",
-            name: "_type",
-            type: "bool"
+            "internalType": "bool",
+            "name": "_type",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "_strike",
-            type: "uint256"
+            "internalType": "uint256",
+            "name": "_strike",
+            "type": "uint256"
           },
           {
-            internalType: "uint256",
-            name: "_expiry",
-            type: "uint256"
+            "internalType": "uint256",
+            "name": "_expiry",
+            "type": "uint256"
           }
         ],
-        name: "requestOption",
-        outputs: [
+        "name": "requestOption",
+        "outputs": [
           {
-            components: [
+            "components": [
               {
-                internalType: "uint256",
-                name: "_id",
-                type: "uint256"
+                "internalType": "uint256",
+                "name": "_id",
+                "type": "uint256"
               },
               {
-                internalType: "address",
-                name: "_index",
-                type: "address"
+                "internalType": "address",
+                "name": "_index",
+                "type": "address"
               },
               {
-                internalType: "bool",
-                name: "_type",
-                type: "bool"
+                "internalType": "bool",
+                "name": "_type",
+                "type": "bool"
               },
               {
-                internalType: "uint256",
-                name: "_strike",
-                type: "uint256"
+                "internalType": "uint256",
+                "name": "_strike",
+                "type": "uint256"
               },
               {
-                internalType: "uint256",
-                name: "_premium",
-                type: "uint256"
+                "internalType": "uint256",
+                "name": "_premium",
+                "type": "uint256"
               },
               {
-                internalType: "uint256",
-                name: "_expiry",
-                type: "uint256"
+                "internalType": "uint256",
+                "name": "_expiry",
+                "type": "uint256"
               },
               {
-                internalType: "address",
-                name: "_denomination",
-                type: "address"
+                "internalType": "address",
+                "name": "_denomination",
+                "type": "address"
               },
               {
-                internalType: "uint256",
-                name: "_timestamp",
-                type: "uint256"
+                "internalType": "uint256",
+                "name": "_timestamp",
+                "type": "uint256"
               },
               {
-                internalType: "address",
-                name: "_buyer",
-                type: "address"
+                "internalType": "address",
+                "name": "_buyer",
+                "type": "address"
               },
               {
-                internalType: "address",
-                name: "_seller",
-                type: "address"
+                "internalType": "address",
+                "name": "_seller",
+                "type": "address"
               }
             ],
-            internalType: "struct Exchange.OptionInfo",
-            name: "",
-            type: "tuple"
+            "internalType": "struct Exchange.OptionInfo",
+            "name": "",
+            "type": "tuple"
           }
         ],
-        stateMutability: "nonpayable",
-        type: "function"
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
     ],
     functionName: 'requestOption',
-    args: ["0x98ae04cc2cea1226d3b8e029a1ee376a9e7e83c0", true, parseInt(debouncedStrike), parseInt(debouncedExpiration)],
+    args: [index, true, BigNumber.from(debouncedStrike.toString()).pow(18), parseInt(1669814557)],
     enabled: Boolean(debouncedStrike) && Boolean(debouncedExpiration) && Boolean(debouncedLeverage),
   })
+
+  console.log([index, true, parseInt(debouncedStrike), parseInt(debouncedExpiration)*24*60*60]);
 
   const { data, write } = useContractWrite(config);
 
@@ -222,8 +227,8 @@ export function Put({ indexAddress, setCallActive }) {
                   <span>Leverage</span>
                   <a href="#" className="ml-2 flex-shrink-0 text-base-400 hover:text-base-500">
                     <span className="sr-only">Learn more about how tax is calculated</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                     </svg>
                   </a>
                 </dt>
@@ -237,8 +242,8 @@ export function Put({ indexAddress, setCallActive }) {
             <button className={"btn btn-block space-x-2" + (isLoading ? " loading" : "")} disabled={!write || isLoading}>
               {isLoading ? 'Buying Put' :
                 <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
                   </svg>
                   Buy Put
                 </div>
@@ -256,7 +261,7 @@ export function Put({ indexAddress, setCallActive }) {
   )
 }
 
-export function Call({ indexAddress, setPutActive }) {
+export function Call({ index, setPutActive }) {
   const [strike, setStrike] = React.useState(15);
   const [expirationDays, setExpirationDays] = React.useState(30);
   const [leverage, setLeveraege] = React.useState(10);
@@ -389,8 +394,8 @@ export function Call({ indexAddress, setPutActive }) {
                   <span>Leverage</span>
                   <a href="#" className="ml-2 flex-shrink-0 text-base-400 hover:text-base-500">
                     <span className="sr-only">Learn more about how tax is calculated</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                     </svg>
                   </a>
                 </dt>
@@ -404,8 +409,8 @@ export function Call({ indexAddress, setPutActive }) {
             <button className={"btn btn-block space-x-2" + (isLoading ? " loading" : "")} disabled={!write || isLoading}>
               {isLoading ? 'Buying Call' :
                 <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
                   </svg>
                   Buy Call
                 </div>
@@ -423,7 +428,7 @@ export function Call({ indexAddress, setPutActive }) {
   )
 }
 
-export function Form({ indexAddress }) {
+export function Form({ index }) {
   const [putActive, setPut] = React.useState(false)
 
   const setPutActive = event => {
@@ -436,7 +441,7 @@ export function Form({ indexAddress }) {
 
   return (
     <>
-      {putActive ? <Put indexAddress={indexAddress} setCallActive={setCallActive} /> : <Call indexAddress={indexAddress} setPutActive={setPutActive} />}
+      {putActive ? <Put index={index} setCallActive={setCallActive} /> : <Call index={index} setPutActive={setPutActive} />}
     </>
   )
 }

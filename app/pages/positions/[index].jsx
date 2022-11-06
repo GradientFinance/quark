@@ -1,15 +1,16 @@
 import { useEffect, React, useState } from 'react'
 import { Page } from 'components/ui/page'
 import { Navbar } from 'components/ui/navbar'
-import { Form } from "components/derivative/form";
-import { Positions } from "components/derivative/positions";
-import { Bar } from "components/derivative/bar";
-import { Orders } from "components/derivative/orders";
-import { Bids } from "components/derivative/bids";
-import { Chart } from "components/derivative/chart";
+import { Form } from "components/positions/form";
+import { Positions } from "components/positions/positions";
+import { Bar } from "components/positions/bar";
+import { Orders } from "components/positions/orders";
+import { Bids } from "components/positions/bids";
+import { Chart } from "components/positions/chart";
 import dynamic from "next/dynamic";
+import { useRouter } from 'next/router'
 
-export function Content({ indexAddress }) {
+export function Content({ indexAddress, index }) {
   return (
     <>
       <div className="px-4 py-4 sm:px-6 lg:px-8 bg-base-300">
@@ -21,7 +22,7 @@ export function Content({ indexAddress }) {
             <Chart />
           </div>
           <div className="col-span-1 h-full">
-            <Form indexAddress={indexAddress} index={"placeholder"} />
+            <Form indexAddress={indexAddress} index={ index } />
           </div>
           <div className="col-span-2">
             <Positions />
@@ -37,6 +38,10 @@ export function Content({ indexAddress }) {
 }
 
 export default function App() {
+  const router = useRouter()
+  const { index } = router.query
+
+
   const [indexAddress, setIndexAddress] = useState("");
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export default function App() {
   return (
     <Page>
       <Navbar />
-      <Content indexAddress={indexAddress} />
+      <Content indexAddress={indexAddress} index={ index } />
     </Page>
   );
 };
