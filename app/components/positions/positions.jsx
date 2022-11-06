@@ -175,7 +175,7 @@ export function ActivePositions({ positions, exchangeAddress }) {
               <td >{ '' } ETH</td>
               <td >{ position._expiry.toNumber() - Math.floor(Date.now() / 1000) <= 0 ? 'Expired' : ('In ' + position._expiry.toNumber() - Math.floor(Date.now() / 1000) + "s")} </td>
               <td>1x</td>
-              <td>{ position._timestamp.toNumber() == 0 ? 'Pending' : ''}</td>
+              <td>{ position._timestamp.toNumber() == 0 ? 'Pending' : 'position._premium.toNumber()'}</td>
               <td>
                 {position._timestamp.toNumber() != 0 ?
                   <div>
