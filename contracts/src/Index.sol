@@ -84,6 +84,10 @@ contract Index {
         return denomination;
     }
 
+    function getData() external view returns (address, int256[] memory, int256, uint8, string[] memory, address, address, address, string memory) {
+        return (factory, coefficients, intercept, accuracy, attributes, collection, uma, denomination, name);
+    }
+
     /*//////////////////////////////////////////////////////////////
                             INTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/

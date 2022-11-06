@@ -31,6 +31,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
     mapping(address => bool) public valid_denomination;
 
     address public immutable uma; 
+    address[] public indeces;
 
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
@@ -64,6 +65,7 @@ contract IndexFactory is IndexDeployer, ReentrancyGuard {
 
         getIndex[name] = index;
         isIndex[index] = true;
+        indeces.push(index);
 
         emit IndexCreated(coefficients, intercept, accuracy, attributes, collection, denomination, name, index);
     }
