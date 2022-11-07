@@ -1,1 +1,13 @@
-/contracts
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*
+/broadcast/*/31337/
+.env
+*.sh
+venv
+contracts/script/deploy/Key.sol
+*.json
