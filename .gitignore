@@ -11,4 +11,3 @@ out/
 venv
 contracts/script/deploy/Key.sol
 *.json
-app
