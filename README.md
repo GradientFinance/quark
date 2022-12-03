@@ -69,4 +69,4 @@ This repo contains both the front-end and the smart contracts. Find the instruct
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/GradientFinance/quark/blob/main/LICENSE) file
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/GradientFinance/quark/blob/main/LICENSE.md) file
