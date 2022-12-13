@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a><img src="https://i.ibb.co/SXqkXQS/68747470733a2f2f692e696d6775722e636f6d2f3277734e4a45372e706e67.png" alt="Markdownify" width="300"></a>
+  <a><img src="https://i.ibb.co/RcH3GcM/quark-logo.png" alt="Markdownify" width="300"></a>
   <br>
   Quark Protocol
   <br>
