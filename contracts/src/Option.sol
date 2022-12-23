@@ -22,13 +22,13 @@ import "@uma/core/contracts/data-verification-mechanism/interfaces/FinderInterfa
 import "@uma/core/contracts/data-verification-mechanism/interfaces/IdentifierWhitelistInterface.sol";
 import "@uma/core/contracts/data-verification-mechanism/implementation/Constants.sol";
 
-import "@uma/core/contracts/optimistic-oracle/interfaces/OptimisticOracleV2Interface.sol";
+import "@uma/corse/contracts/optimistic-oracle/interfaces/OptimisticOracleV2Interface.sol";
 
 /**
  * @title Long Short Pair.
  * @notice Uses a combination of long and short tokens to tokenize the bounded price exposure to a given identifier.
  */
-contract LongShortPair is Testable, ERC1155, Lockable {
+contract LongShortPair is Testable, Lockable {
     using FixedPoint for FixedPoint.Unsigned;
     using SafeERC20 for IERC20;
 
@@ -142,7 +142,7 @@ contract LongShortPair is Testable, ERC1155, Lockable {
      *    - `timerAddress`: Timer used to synchronize contract time in testing. Set to 0x000... in production.
      */
 
-    constructor(ConstructorParams memory params) ERC1155() {
+    constructor(ConstructorParams memory params) {
         finder = params.finder;
         require(bytes(params.pairName).length > 0, "Pair name cant be empty");
         require(params.expirationTimestamp > getCurrentTime(), "Expiration timestamp in past");
